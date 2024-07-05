@@ -276,3 +276,52 @@ def get_job_locations():
     cursor.close()
     connection.close()
     return locations
+
+def get_company_posted_jobs(company_id, job_title=None, location=None, job_type=None, salary_range=None, tag=None):
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor()
+
+    query = """
+    SELECT companies.company_name, companies.id, companies.company_logo, postedjobs.job_title,
+      CASE 
+        WHEN TIMESTAMPDIFF(MINUTE, postedjobs.updated_at, NOW()) < 60 THEN CONCAT(TIMESTAMPDIFF(MINUTE, postedjobs.updated_at, NOW()), ' Min Ago')
+        WHEN TIMESTAMPDIFF(HOUR, postedjobs.updated_at, NOW()) < 24 THEN CONCAT(TIMESTAMPDIFF(HOUR, postedjobs.updated_at, NOW()), ' Hrs Ago')
+        WHEN DATEDIFF(NOW(), postedjobs.updated_at) < 7 THEN CONCAT(DATEDIFF(NOW(), postedjobs.updated_at), ' Days Ago')
+        WHEN DATEDIFF(NOW(), postedjobs.updated_at) < 30 THEN CONCAT(FLOOR(DATEDIFF(NOW(), postedjobs.updated_at) / 7), ' Weeks Ago')
+        WHEN DATEDIFF(NOW(), postedjobs.updated_at) < 365 THEN CONCAT(FLOOR(DATEDIFF(NOW(), postedjobs.updated_at) / 30), ' Months Ago')
+        ELSE CONCAT(FLOOR(DATEDIFF(NOW(), postedjobs.updated_at) / 365), ' Years Ago')
+    END AS time_ago, jobtypes.jobtype_name, locations.location_name,
+    GROUP_CONCAT(skills.skill_name SEPARATOR ',') as skills
+    FROM postedjobs
+    LEFT JOIN companies ON postedjobs.company_id = companies.id
+    LEFT JOIN locations ON locations.id = postedjobs.job_location_id
+    LEFT JOIN jobtypes ON jobtypes.id = postedjobs.jobtype_id
+    LEFT JOIN postedjobs_skills ON postedjobs.id = postedjobs_skills.posted_job_id
+    LEFT JOIN skills ON skills.id = postedjobs_skills.skill_id
+    WHERE companies.id = %s
+    """
+
+    params = [company_id]
+    if job_title:
+        query += " AND postedjobs.job_title LIKE %s"
+        params.append(f"%{job_title}%")
+    if location:
+        query += " AND locations.location_name = %s"
+        params.append(location)
+    if job_type:
+        query += " AND jobtypes.id = %s"
+        params.append(job_type)
+    if salary_range:
+        query += " AND postedjobs.salary_range_id = %s"
+        params.append(salary_range)
+    if tag:
+        query += " AND postedjobs.job_title = %s"
+        params.append(tag)
+
+    query += " GROUP BY postedjobs.id"
+
+    cursor.execute(query, params)
+    posted_jobs = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return posted_jobs
