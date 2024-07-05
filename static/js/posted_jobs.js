@@ -17,17 +17,16 @@ function load_jobs(currentPage, job_title){
                     "disabled",
                     true
                 );
-                $('#prev').css({"background-color": "#ddd", "color": "black"})
-            };
-
+                $('#prev').css({"background-color": "#ddd", "color": "black"});
+            }
+    
             if (parseInt($('#currentPage').val(), 0) == parseInt($('#total').val(), 0)) {
                 $('#next').prop(
                     "disabled",
                     true
                 );
-                $('#next').css({"background-color": "#ddd", "color": "black"})
-            };
-            
+                $('#next').css({"background-color": "#ddd", "color": "black"});
+            }
         }
     });
 }
@@ -43,7 +42,9 @@ $('#search_posted_job').keyup(function(){
 });
 
 $(document).ready(function(){
+    
     load_jobs();
+    
 });
 
 function prev_jobs() {

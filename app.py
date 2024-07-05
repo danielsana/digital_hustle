@@ -291,7 +291,7 @@ def company_profile():
 def postjob():
     connection = pymysql.connect(**db_config)
     cursor = connection.cursor()
-    if request.method == 'POST':
+    if request.method == 'POST' :
         job_title = request.form.get('job_title')
         job_location_id = request.form.get('job_location_id')
         jobtype_id = request.form.get('jobtype_id')
