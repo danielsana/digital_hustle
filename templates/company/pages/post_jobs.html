@@ -1,9 +1,9 @@
-<div class="page-row">
+<div class="page-row row">
     <div class="page-title">
         <h4 class="top_title ms-4 mt-3">Post Jobs</h4>
     </div>
 </div>
-<div class="profile-bio-container">
+<div class="profile-bio-container col-md-12 col-sm-7">
     <div class="profile-bio-wrapper">
         <div class="post-jobs-form">
             <small class="form-error">
@@ -22,7 +22,7 @@
                     <div class="post-jobs-form-row">
                         <div class="post-jobs-form-group">
                             <label class="post-jobs-label" for="">Job Title</label>
-                            <input class="post-jobs-input" type="text" name="job_title">
+                            <input class="post-jobs-input"  type="text" name="job_title">
                         </div>
                         <div class="post-jobs-form-group">
                             <label class="post-jobs-label" for="">Location</label>
@@ -80,22 +80,30 @@
         </div>
     </div>
 </div>
-<div class="profile-bio-container">
-    <div class="profile-bio-wrapper">
-        <div class="company-posted-jobs-list">
-            <div class="company-posted-jobs-list-title">
+<div class="profile-bio-container col-md-12 col-sm-6">
+    <div class="profile-bio-wrapper card  p-3 ">
+        <div class="row  text-center">
+            <div class="card-title">
                 <h4>Jobs you have posted.</h4>
+                
             </div>
-            {% for postedJob in postedJobs %}
-            <div class="company-posted-job">
-                <h5 class="company-posted-job-title">
-                    {{ postedJob[0] }}
-                </h5>
-                <p class="company-posted-job-description">
-                    {{ postedJob[1] }}
-                </p>
+            
+            <div class="col-md-3 mx-3">
+                <form action="javascript:void(0);" method="POST">
+                    <div class="pull-left search">
+                            <input id="search_posted_job" class="form-control" type="text" placeholder="Job Title e.g: Web Developer">
+                        </div>
+                  </form>
             </div>
-            {% endfor %}
-        </div>
+                
+                <div id="posted_jobs" class=" table-responsive col-md-12 col-lg-12 col-sm-12">
+
+                </div>
+           
+            
+            
+        
+    </div>
+
     </div>
 </div>

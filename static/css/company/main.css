@@ -64,3 +64,44 @@
         flex: 1 1 calc(50% - 1rem);
     }
 }
+.badge-success {
+    background-color: #2B4B83 !important;
+    color: #fff !important;
+    padding: 3px 6px 5px 6px ;
+    font-size: 12px;
+}
+.rounded-pill {
+    border-radius: 10px !important;
+}
+.d-inline {
+    display: inline !important;
+}
+.company-posted-jobs-list .pull-left {
+    float: left !important;
+}
+.company-posted-jobs-list .search, .fixed-table-toolbar .columns {
+    position: relative !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    line-height: 34px !important;
+}
+.featured-result-pagination p button {
+  color: rgb(252, 249, 249);
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
+  border: none;
+  margin: 0 5px;
+  border-radius: 5px;
+  background-color: #2B4B83;
+}
+
+.featured-result-pagination p button.active {
+  background-color: #2471fc;
+  color: white;
+  border-radius: 5px;
+}
+.featured-result-pagination p button:hover:not(.active) {
+  background-color: #ddd;
+  color: black;
+}
