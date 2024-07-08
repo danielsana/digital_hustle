@@ -1,4 +1,4 @@
-<div class="sidebar-container"  id="offcanvasExample" aria-labelledby="canvasExampleLabel">
+<div class="sidebar-container">
         <div class="sidebar-wrapper">
             <div class="sidebar-logo-container">
                 <div class="sidebar-logo-wrapper">
@@ -9,25 +9,36 @@
             </div>
             <div class="sidebar-menu-container">
                 <div class="sidebar-menu-wrapper">
-                    <div class="menu-box">
-                        <ul class="menu-ul">
-                            <li class="menu-item">
-                                <a href="/" class="menu-link" data-link="home">Home</a>
+                    <div class="side-menu-box">
+                        <ul class="side-menu-list">
+                            <li class="">
+                                <a href="/" class="" data-link="home"><span class="las la-home"></span>Home</a>
                             </li>
-                            <li class="menu-item">
-                                <a href="{{ url_for('company_dashboard') }}" class="menu-link" data-link="dashboard">Dashboard</a>
+                            <li class="">
+                                <a href="{{ url_for('company_dashboard') }}" class=" {{ 'active' if request.path in ['/company/dashboard', '/company/main-job-search'] else '' }}" data-link="dashboard"><span class="las la-grip-horizontal"></span>Dashboard</a>
+                                <div class="{{ 'menu-link-overlay' if request.path in ['/company/dashboard', '/company/main-job-search'] else '' }}"></div>
+                            <div class="{{ 'menu-link-overlay-b' if request.path in ['/company/dashboard', '/company/main-job-search'] else '' }}"></div>
                             </li>
-                            <li class="menu-item">
-                                <a href="{{ url_for('company_profile') }}" class="menu-link" data-link="profile">Company Profile</a>
+                            <li class="">
+                                <a href="{{ url_for('company_profile') }}" class=" {{ 'active' if request.path in ['/company/profile', '/company/main-job-search'] else '' }}" data-link="profile"><span class="las la-user-circle"></span>Company Profile</a>
+                                <div class="{{ 'menu-link-overlay' if request.path in ['/company/profile', '/company/main-job-search'] else '' }}"></div>
+                            <div class="{{ 'menu-link-overlay-b' if request.path in ['/company/profile', '/company/main-job-search'] else '' }}"></div>
                             </li>
-                            <li class="menu-item">
-                                <a href="{{ url_for('postjob') }}" class="menu-link" data-link="postjobs">Post Jobs</a>
+                            <li class="">
+                                <a href="{{ url_for('postjob') }}" class=" {{ 'active' if request.path in ['/company/postjob', '/company/main-job-search'] else '' }}" data-link="postjobs">
+                                    <span class="las la-grip-horizontal"></span>Post Jobs</a>
+                                <div class="{{ 'menu-link-overlay' if request.path in ['/company/postjob', '/company/main-job-search'] else '' }}"></div>
+                            <div class="{{ 'menu-link-overlay-b' if request.path in ['/company/postjob', '/company/main-job-search'] else '' }}"></div>
                             </li>
-                            <li class="menu-item">
-                                <a href="{{ url_for('company_applications') }}" class="menu-link" data-link="applications">Applications</a>
+                            <li class="">
+                                <a href="{{ url_for('company_applications') }}" class="{{ 'active' if request.path in ['/company/company_applications', '/company/main-job-search'] else '' }}" data-link="applications"><span class="las la-envelope-open-text"></span>Applications</a>
+                                <div class="{{ 'menu-link-overlay' if request.path in ['/company/company_applications', '/company/main-job-search'] else '' }}"></div>
+                            <div class="{{ 'menu-link-overlay-b' if request.path in ['/company/company_applications', '/company/main-job-search'] else '' }}"></div>
                             </li>
-                            <li class="menu-item">
-                                <a href="{{ url_for('companylogout') }}" class="menu-link" data-link="logout">Logout</a>
+                            <li class="">
+                                <a href="{{ url_for('companylogout') }}" class=" {{ 'active' if request.path in ['/company/companylogout', '/company/main-job-search'] else '' }}" data-link="logout"><span class="las la-home"></span>Logout</a>
+                                <div class="{{ 'menu-link-overlay' if request.path in ['/company/companylogout', '/company/main-job-search'] else '' }}"></div>
+                            <div class="{{ 'menu-link-overlay-b' if request.path in ['/company/companylogout', '/company/main-job-search'] else '' }}"></div>
                             </li>
                         </ul>
                     </div>
