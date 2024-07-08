@@ -274,7 +274,27 @@ def companyLogin():
 
 @app.route('/candidate/profile')
 def candidate_profile():
-    return render_template('candidate/components/profile.html')
+    if 'key' in session:
+        # User Profile
+        connection = pymysql.connect(host='localhost', user='root',password='', database='hustle_db' )
+        sql2 = "select * from candidates where id = %s"
+        cursor2 = connection.cursor()
+        cursor2.execute(sql2, session['key'])
+        candidate = cursor2.fetchone()
+
+        session['fname'] = candidate[2]
+        session['lname'] = candidate[3]
+        session['surname'] = candidate[4]
+        session['phone'] = candidate[5]
+        session['title'] = candidate[9]
+        session['gender'] = candidate[10]
+        session['dob'] = candidate[11]
+        session['national_id_no'] = candidate[12]
+        session['address'] = candidate[13]
+        session['bio'] = candidate[14]
+        return render_template('candidate/components/profile.html')
+    else:
+        return redirect('/candidate/login')
 
 @app.route('/company/dashboard')
 @login_required
@@ -391,4 +411,4 @@ def about():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run()
+    app.run(port=8080)
