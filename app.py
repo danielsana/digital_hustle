@@ -2,6 +2,8 @@ from flask import *
 from functions import *
 import math
 from functools import wraps
+import os
+from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
@@ -301,11 +303,66 @@ def candidate_profile():
 def company_dashboard():
    return render_template('company/dashboard.html')
 
-@app.route('/company/profile')
+@app.route('/company/profile', methods=['POST', 'GET'])
 @login_required
 def company_profile():
-    return render_template('/company/company-profile.html')
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    company_id = session['id']
+    if request.method == 'POST':
+        company_name = request.form.get('company_name')
+        company_email = request.form.get('company_email')
+        company_phone = request.form.get('company_phone')
+        company_location = request.form.get('company_location')
+        admin_fname = request.form.get('admin_fname')  
+        admin_lname = request.form.get('admin_lname')
+        admin_surname = request.form.get('admin_surname')
+        admin_phone = request.form.get('admin_phone')  
+        company_description = request.form.get('company_description')  
 
+        company_logo = request.files['company_logo']
+        if company_logo and company_logo.filename != '':
+            filename = secure_filename(company_logo.filename)
+            logo_path = os.path.join('static/company_logos', filename)
+            company_logo.save(logo_path)
+
+            sql = """
+                UPDATE companies
+                SET company_name=%s, company_email=%s, company_phone=%s, company_location=%s, 
+                    admin_fname=%s, admin_lname=%s, admin_surname=%s, admin_phone=%s, 
+                    company_description=%s, company_logo=%s
+                WHERE id=%s
+            """
+            cursor.execute(sql, (
+                company_name, company_email, company_phone, company_location, 
+                admin_fname, admin_lname, admin_surname, admin_phone, 
+                company_description, filename, company_id
+            ))
+        else:
+            sql = """
+                UPDATE companies
+                SET company_name=%s, company_email=%s, company_phone=%s, company_location=%s, 
+                    admin_fname=%s, admin_lname=%s, admin_surname=%s, admin_phone=%s, 
+                    company_description=%s
+                WHERE id=%s
+            """
+            cursor.execute(sql, (
+                company_name, company_email, company_phone, company_location, 
+                admin_fname, admin_lname, admin_surname, admin_phone, 
+                company_description, company_id
+            ))
+        connection.commit()
+        connection.close()
+        flash('Profile updated successfully','success')
+        return redirect(url_for('company_profile'))
+
+    else:
+        sql = 'SELECT * FROM companies WHERE id=%s'
+        cursor.execute(sql, company_id)
+        company_pro = cursor.fetchone()
+        connection.close()
+        return render_template('/company/company-profile.html', profile=company_pro)
+    
 @app.route('/company/postjob', methods=['POST', 'GET'])
 @login_required
 def postjob():
@@ -369,7 +426,6 @@ def company_search():
     salary_range = request.form.get('search_salary')
     page = int(request.form.get('currentPage', 1))
     tag = request.form.get('tag')
-    print(tag)
     if tag == "None" or tag == "":
         tag = None
     if location == "None" or location == "Select Location":
@@ -383,7 +439,6 @@ def company_search():
     start = (page - 1) * per_page
     end = start + per_page
     paginated_data = company_posted_jobs[start:end]
-    print("company posted jobs are", paginated_data)
     return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages  )})
 
 @app.route('/company/applications')

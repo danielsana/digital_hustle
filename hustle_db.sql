@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 21, 2024 at 12:43 PM
+-- Generation Time: Jul 10, 2024 at 03:30 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -124,7 +124,8 @@ INSERT INTO `candidates` (`id`, `email`, `fname`, `lname`, `surname`, `phone`, `
 (49, 'blanche.wiegand@hotmail.com', 'Chandler', NULL, 'Powlowski', NULL, '$2y$10$/R.g.d/comQEx8G7J8DmjOh5AcAcXerW7y/7D12PWooSPDb24Xh8m', '', 'candidate_profile_pic_placeholder.png', 'Photographer', NULL, NULL, NULL, 'Garissa', NULL, NULL, NULL, '2023-05-18 05:20:46', '2023-05-18 05:20:46'),
 (50, 'mvonrueden@koss.com', 'Matilda', NULL, 'Wilkinson', NULL, '$2y$10$/R.g.d/comQEx8G7J8DmjOh5AcAcXerW7y/7D12PWooSPDb24Xh8m', '', 'candidate_profile_pic_placeholder.png', 'Financial Services Sales Agent', NULL, NULL, NULL, 'Taveta', NULL, NULL, NULL, '2023-05-18 05:20:46', '2023-05-18 05:20:46'),
 (51, 'j@gmail.com', 'Jman', NULL, 'manJay', NULL, '$2y$10$IKFkLnAQXQ.9RqVA7zWNEuoJSYAbXAMXhzLBy9TM9CZVfM8Dc.HS6', '', 'candidate_profile_pic_placeholder.png', NULL, NULL, NULL, NULL, 'Kisumu', NULL, NULL, NULL, '2023-05-18 08:29:22', '2023-05-18 08:29:22'),
-(52, 'newman@gmail.com', 'New', NULL, 'Man', NULL, '$2y$10$p3zj.MkT5jYQT/9nI.ASAOPQgpc4iY0PRf/2pnvqirLV0qJAmk.U6', NULL, 'candidate_profile_pic_placeholder.png', NULL, NULL, NULL, NULL, 'Lodwar', NULL, NULL, NULL, '2023-06-07 20:39:53', '2023-06-07 20:39:53');
+(52, 'newman@gmail.com', 'New', NULL, 'Man', NULL, '$2y$10$p3zj.MkT5jYQT/9nI.ASAOPQgpc4iY0PRf/2pnvqirLV0qJAmk.U6', NULL, 'candidate_profile_pic_placeholder.png', NULL, NULL, NULL, NULL, 'Lodwar', NULL, NULL, NULL, '2023-06-07 20:39:53', '2023-06-07 20:39:53'),
+(53, 'shanice@gmail.com', 'Shanice', NULL, 'Naliaka', NULL, '$2b$12$bPNDXm0jlPCsUtjsW8hcE.TmdBHt9wOr2i0s.nFv//nhBy6LmB2cS', NULL, 'candidate_profile_pic_placeholder.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -262,20 +263,23 @@ CREATE TABLE `companies` (
   `remember_token` varchar(100) DEFAULT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `company_description` varchar(500) DEFAULT NULL,
+  `company_location` varchar(55) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `companies`
 --
 
-INSERT INTO `companies` (`id`, `company_name`, `company_email`, `company_logo`, `company_phone`, `admin_fname`, `admin_lname`, `admin_surname`, `admin_phone`, `password`, `remember_token`, `email_verified_at`, `created_at`, `updated_at`) VALUES
-(1, 'Everydayapps', 'contact@eda.com', 'logo_01.jpg', NULL, NULL, NULL, NULL, NULL, '$2y$10$/R.g.d/comQEx8G7J8DmjOh5AcAcXerW7y/7D12PWooSPDb24Xh8m', NULL, NULL, '2023-05-18 05:20:42', '2023-05-18 05:20:42'),
-(2, 'Cellulant', 'contact@cellulant.com', 'logo_02.jpg', NULL, NULL, NULL, NULL, NULL, '$2y$10$/R.g.d/comQEx8G7J8DmjOh5AcAcXerW7y/7D12PWooSPDb24Xh8m', NULL, NULL, '2023-05-18 05:20:42', '2023-05-18 05:20:42'),
-(3, 'Codesign', 'contact@codesign.com', 'logo_03.jpg', NULL, NULL, NULL, NULL, NULL, '$2y$10$/R.g.d/comQEx8G7J8DmjOh5AcAcXerW7y/7D12PWooSPDb24Xh8m', NULL, NULL, '2023-05-18 05:20:42', '2023-05-18 05:20:42'),
-(4, 'XCETRA', 'contact@xcetra.com', 'logo_04.jpg', NULL, NULL, NULL, NULL, NULL, '$2y$10$/R.g.d/comQEx8G7J8DmjOh5AcAcXerW7y/7D12PWooSPDb24Xh8m', NULL, NULL, '2023-05-18 05:20:42', '2023-05-18 05:20:42'),
-(5, 'TECHBEAST', 'contact@techbeast.com', 'logo_05.jpg', NULL, NULL, NULL, NULL, NULL, '$2y$10$/R.g.d/comQEx8G7J8DmjOh5AcAcXerW7y/7D12PWooSPDb24Xh8m', NULL, NULL, '2023-05-18 05:20:42', '2023-05-18 05:20:42'),
-(6, 'Design Village', 'k@gmail.com', 'logo_06.jpg', NULL, NULL, NULL, NULL, NULL, '$2y$10$6/nlfGC.7oAzrkbzC.LRrecey4EBq8WIXbMzu5M0XcYVUuk/zzLJ2', NULL, NULL, '2023-05-18 08:31:37', '2023-05-18 08:31:37');
+INSERT INTO `companies` (`id`, `company_name`, `company_email`, `company_logo`, `company_phone`, `admin_fname`, `admin_lname`, `admin_surname`, `admin_phone`, `password`, `remember_token`, `email_verified_at`, `created_at`, `updated_at`, `company_description`, `company_location`) VALUES
+(1, 'Everydayapps', 'contact@eda.com', 'logo_01.jpg', NULL, NULL, NULL, NULL, NULL, '$2y$10$/R.g.d/comQEx8G7J8DmjOh5AcAcXerW7y/7D12PWooSPDb24Xh8m', NULL, NULL, '2023-05-18 05:20:42', '2023-05-18 05:20:42', '', NULL),
+(2, 'Cellulant', 'contact@cellulant.com', 'logo_02.jpg', NULL, NULL, NULL, NULL, NULL, '$2y$10$/R.g.d/comQEx8G7J8DmjOh5AcAcXerW7y/7D12PWooSPDb24Xh8m', NULL, NULL, '2023-05-18 05:20:42', '2023-05-18 05:20:42', '', NULL),
+(3, 'Codesign', 'contact@codesign.com', 'logo_03.jpg', NULL, NULL, NULL, NULL, NULL, '$2y$10$/R.g.d/comQEx8G7J8DmjOh5AcAcXerW7y/7D12PWooSPDb24Xh8m', NULL, NULL, '2023-05-18 05:20:42', '2023-05-18 05:20:42', '', NULL),
+(4, 'XCETRA', 'contact@xcetra.com', 'logo_04.jpg', NULL, NULL, NULL, NULL, NULL, '$2y$10$/R.g.d/comQEx8G7J8DmjOh5AcAcXerW7y/7D12PWooSPDb24Xh8m', NULL, NULL, '2023-05-18 05:20:42', '2023-05-18 05:20:42', '', NULL),
+(5, 'TECHBEAST', 'contact@techbeast.com', 'logo_05.jpg', NULL, NULL, NULL, NULL, NULL, '$2y$10$/R.g.d/comQEx8G7J8DmjOh5AcAcXerW7y/7D12PWooSPDb24Xh8m', NULL, NULL, '2023-05-18 05:20:42', '2023-05-18 05:20:42', '', NULL),
+(6, 'Design Village', 'k@gmail.com', 'logo_06.jpg', NULL, NULL, NULL, NULL, NULL, '$2y$10$6/nlfGC.7oAzrkbzC.LRrecey4EBq8WIXbMzu5M0XcYVUuk/zzLJ2', NULL, NULL, '2023-05-18 08:31:37', '2023-05-18 08:31:37', '', NULL),
+(7, 'admin', 'admin@admin.com', 'pp.jpeg', '0718684491', 'Job', 'None', 'None', 'None', '$2b$12$2LV6o9Vb13k.jL6mhL/eD.GX3o1GB/AT1OPe2LMRbEbNNYDxc9O52', NULL, NULL, NULL, NULL, 'Dealing with high tech solutions', 'Nairobi-Kenya');
 
 -- --------------------------------------------------------
 
@@ -465,7 +469,15 @@ INSERT INTO `postedjobs` (`id`, `job_title`, `jobtype_id`, `job_location_id`, `s
 (6, 'Junior Software Engineer\r\n', '3', '4', '3', 'We are looking for a product minded software engineer (Front End Focus) not only a coder. We\'re seeking a builder who will bridge technical expertise with product strategy. Work from home as standard. 40 hours a week, with 2 days off your normal work days (paid) a month for career development. While applying, please tell us your favorite color ', 5, '2024-06-12 08:59:03', '2024-06-12 08:59:03'),
 (7, 'Full Stack Developer\r\n', '3', '3', '3', 'Medbill is a Durable Medical Equipment Billing Company based in the US. We are looking for a Full Stack Developer for contract work to assist in our development department that is comfortable working remotely. The Full Stack Developer contractor will work remotely with the Medbill development team to design, develop, install, and support software. ', 5, '2024-06-12 11:46:51', '2024-06-12 11:46:51'),
 (8, 'Web/Mobile Applications Developer\n', '1', '2', '2', 'Applicants must be graduate IT professionals with certification and minimum 3 years relevant experience. The job description will include web/mobile spatial programming and database management in a GIS environment. ', 4, '2024-06-12 11:47:49', '2024-06-12 11:47:49'),
-(9, 'UX_Engineer\n', '2', '3', '5', 'A UX Engineer creates intuitive and enjoyable digital experiences by understanding user needs, designing interfaces, and optimizing interactions to enhance usability and satisfaction. They are the ones who are keen to design details, responsible for crafting user interfaces and are conscious of the overall user experience of an application', 1, '2024-06-12 11:49:36', '2024-06-12 11:49:36');
+(9, 'UX_Engineer\n', '2', '3', '5', 'A UX Engineer creates intuitive and enjoyable digital experiences by understanding user needs, designing interfaces, and optimizing interactions to enhance usability and satisfaction. They are the ones who are keen to design details, responsible for crafting user interfaces and are conscious of the overall user experience of an application', 1, '2024-06-12 11:49:36', '2024-06-12 11:49:36'),
+(10, 'designer', '1', '2', '3', 'good job', 0, '2024-07-04 08:12:09', '2024-07-04 08:12:09'),
+(11, 'developer', '1', '1', '1', 'devs', 0, '2024-07-04 08:30:07', '2024-07-04 08:30:07'),
+(12, 'designer', '2', '1', '3', 'hi', 0, '2024-07-04 09:51:02', '2024-07-04 09:51:02'),
+(13, 'designer', '2', '1', '3', 'hi', 0, '2024-07-04 09:51:53', '2024-07-04 09:51:53'),
+(14, 'designer', '2', '1', '3', 'hi', 0, '2024-07-04 09:53:59', '2024-07-04 09:53:59'),
+(15, 'Network Admin', '1', '1', '2', 'high paying job', 7, '2024-07-04 11:26:19', '2024-07-04 11:26:19'),
+(16, 'Cyber Attendant ', '1', '2', '1', 'cyber attendant', 7, '2024-07-04 12:45:22', '2024-07-04 12:45:22'),
+(17, 'designer', '1', '1', '1', 'good job', 7, '2024-07-09 09:30:23', '2024-07-09 09:30:23');
 
 -- --------------------------------------------------------
 
@@ -505,7 +517,14 @@ INSERT INTO `postedjobs_skills` (`posted_job_id`, `skill_id`, `created_at`, `upd
 (3, 27, NULL, NULL),
 (3, 28, NULL, NULL),
 (3, 29, NULL, NULL),
-(3, 30, NULL, NULL);
+(3, 30, NULL, NULL),
+(14, 21, NULL, NULL),
+(14, 23, NULL, NULL),
+(15, 23, NULL, NULL),
+(15, 25, NULL, NULL),
+(16, 23, NULL, NULL),
+(17, 21, NULL, NULL),
+(17, 23, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -787,7 +806,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `candidates`
 --
 ALTER TABLE `candidates`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `candidates_rating`
@@ -805,7 +824,7 @@ ALTER TABLE `certifications`
 -- AUTO_INCREMENT for table `companies`
 --
 ALTER TABLE `companies`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -847,7 +866,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `postedjobs`
 --
 ALTER TABLE `postedjobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `salaryranges`
