@@ -1,80 +1,112 @@
-  
-        <div class="card-body " >
-            <table class="table table-hover table-striped align-middle mb-0 bg-white">
-                <thead class="bg-light">
-                  <tr style="color: #2B4B83; font-size: 17px;">
-                    <th>Job Title</th>
-                    <th>Job Description</th>
-                    <th>&nbsp;&nbsp; Posted&nbsp;&nbsp;</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-              {% if postedJobs %}  
-                {% for postedJob in postedJobs %}
-                <tbody>
-                  <tr>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <img
-                              src="../../../static/company_logos/{{postedJob[2]}}"
-                              alt=""
-                              style="width: 45px; height: 45px"
-                              class="rounded-circle"
-                              />
-                          <div class="ms-3">
-                            <p class="fw-bold mb-1">{{postedJob[3]}}</p>
-                            <p class="text-muted mb-0">{{postedJob[6]}}</p>
-                          </div>
-                        </div>
-                      </td>
-                    
-                    <td>
-                      <p class="fw-normal mb-1">{{postedJob[5]}}</p>
-                      <p class="text-muted mb-0"><span>Skills:</span> {{postedJob[7]}}</p>
-                    </td>
-                  
-                    <td>
-                      <span class=" badge-success rounded-pill d-inline">{{postedJob[4]}}</span>
-                    </td>
-                      <td>
-                        <div class="d-flex align-items-end" >
-                          <button type="button" id="edit_post" class="btn btn-link btn-sm btn-rounded">
-                            <i class="fas fa-edit"></i>
-                          </button>
-                          <button type="button" class="btn btn-link btn-sm btn-rounded">
-                            <i class="fas fa-eye"></i>
-                          </button>
-                          <button type="button" class="btn btn-link btn-sm btn-rounded">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                  </tr>
-                
-                {% endfor %}
-              {% else %}
-              <tr>
-                  <td>
-                    <h5 style="color: #007CAD; text-align: center; font-size: 20px;" class="m-5">{{ postedJobs|length }} Jobs Found</h5>
-                  </td>
-                </tr>
-              {% endif %}
-                </tbody>
-              </table>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<div class="card-body">
+  <table class="table table-hover table-striped align-middle mb-0 bg-white">
+    <thead class="bg-light">
+      <tr style="color: #2b4b83; font-size: 17px">
+        <th>Job Title</th>
+        <th>Job Description</th>
+        <th>&nbsp;&nbsp; Posted&nbsp;&nbsp;</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    {% if postedJobs %} {% for postedJob in postedJobs %}
+    <tbody>
+      <tr>
+        <td>
+          <div class="d-flex align-items-center">
+            <img
+              src="../../../static/company_logos/{{postedJob[2]}}"
+              alt=""
+              style="width: 45px; height: 45px"
+              class="rounded-circle"
+            />
+            <div class="ms-3">
+              <p class="fw-bold mb-1">{{postedJob[3]}}</p>
+              <p class="text-muted mb-0">{{postedJob[6]}}</p>
             </div>
-            <div style="text-align: center; " class="text-center mx-3">
-              <div class="featured-result-pagination" id="paginate">
-                  <p>
-                  <input type="hidden" id="currentPage" value="{{page}}">
-                  <input type="hidden" id="total" value="{{total}}">
-                  <button id="prev" onclick="prev_jobs()"><i class="fas fa-chevron-left"></i> prev</button>
-                  {% for i in range(1, (total+1)) %}
-                  <button class="{% if i == page %} active {% endif %}" id="{{i}}" onclick="pages_jobs(this.id)">{{i}}</button>
-                  {% endfor %}
-                  <button id="next" onclick="next_jobs()">Next <i class="fas fa-chevron-right"></i> </button>
-                  </p>
-              </div>
-          <!-- </div>
+          </div>
+        </td>
+
+        <td>
+          <p class="fw-normal mb-1">{{postedJob[5]}}</p>
+          <p class="text-muted mb-0"><span>Skills:</span> {{postedJob[7]}}</p>
+        </td>
+
+        <td>
+          <span class="badge-success rounded-pill d-inline"
+            >{{postedJob[4]}}</span
+          >
+        </td>
+        <td>
+          <div class="d-flex align-items-end">
+            <button
+              type="button"
+              id="edit_post"
+              class="btn btn-link btn-sm btn-rounded"
+              title="Edit"
+              data-toggle="modal"
+              data-target="#editModal"
+            >
+              <i class="fas fa-edit"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-link btn-sm btn-rounded"
+              title="Details"
+              data-toggle="modal"
+              data-target="#deleteModal"
+            >
+              <i class="fas fa-eye"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-link btn-sm btn-rounded"
+              title="Delete"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+
+      {% endfor %} {% else %}
+      <tr>
+        <td>
+          <h5
+            style="color: #007cad; text-align: center; font-size: 20px"
+            class="m-5"
+          >
+            {{ postedJobs|length }} Jobs Found
+          </h5>
+        </td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+<div style="text-align: center" class="text-center mx-3">
+  <div class="featured-result-pagination" id="paginate">
+    <p>
+      <input type="hidden" id="currentPage" value="{{page}}" />
+      <input type="hidden" id="total" value="{{total}}" />
+      <button id="prev" onclick="prev_jobs()">
+        <i class="fas fa-chevron-left"></i> prev
+      </button>
+      {% for i in range(1, (total+1)) %}
+      <button
+        class="{% if i == page %} active {% endif %}"
+        id="{{i}}"
+        onclick="pages_jobs(this.id)"
+      >
+        {{i}}
+      </button>
+      {% endfor %}
+      <button id="next" onclick="next_jobs()">
+        Next <i class="fas fa-chevron-right"></i>
+      </button>
+    </p>
+  </div>
+  <!-- </div>
           <script>
             $(document).ready(function() {
                 $('#edit_post').click(function() {
@@ -84,4 +116,156 @@
                 });
             });
             </script> -->
-            
+  <!--Edit Modal -->
+  <div
+    class="modal fade"
+    id="editModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="editModalTitle"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">
+            {{postedJobs[0][0]}} {{session[id]}}
+          </h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="post-jobs-form">
+            <small class="form-error">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %} {% for category, message in messages %}
+              <div
+                class="alert alert-{{ 'success' if category == 'success' else 'danger' }}"
+                role="alert"
+              >
+                {{ message }}
+              </div>
+              {% endfor %} {% endif %} {% endwith %}
+            </small>
+            <form action="{{ url_for('postjob') }}" method="POST">
+              <div class="post-jobs-form-row">
+                <div class="post-jobs-form-group">
+                  <label class="post-jobs-label" for="">Job Title</label>
+                  <input
+                    class="post-jobs-input"
+                    type="text"
+                    value="hi"
+                    name="job_title"
+                  />
+                </div>
+                <div class="post-jobs-form-group">
+                  <label class="post-jobs-label" for="">Location</label>
+                  <select class="post-jobs-select" name="job_location_id" id="">
+                    <option value="">--Choose Job Location--</option>
+                    {% for location in locations %}
+                    <option value="{{ location[0] }}">{{ location[1] }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="post-jobs-form-group">
+                  <label class="post-jobs-label" for="">Job Type</label>
+                  <select class="post-jobs-select" name="jobtype_id" id="">
+                    <option>--Choose Job Type--</option>
+                    {% for jobtype in jobType %}
+                    <option value="{{ jobtype[0] }}">{{ jobtype[1] }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="post-jobs-form-group">
+                  <label class="post-jobs-label" for="">Salary Range</label>
+                  <select class="post-jobs-select" name="salary_range_id" id="">
+                    <option value="">--Choose Salary Range--</option>
+                    {% for salary in salaryRange %}
+                    <option value="{{ salary[0] }}">{{ salary[1] }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="post-jobs-form-row">
+                <div class="post-jobs-form-group col-md-12">
+                  <label class="post-jobs-label" for="skills"
+                    >Choose Skills</label
+                  >
+                  <select
+                    class="post-jobs-skills"
+                    name="job_skills[]"
+                    id="skills"
+                    multiple
+                  >
+                    {% for skill in skills %}
+                    <option value="{{ skill[0] }}">{{ skill[1] }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="post-jobs-form-row">
+                <div class="post-jobs-form-group">
+                  <label class="post-jobs-label" for="">Job Description</label>
+                  <textarea
+                    class="post-jobs-textarea"
+                    name="job_description"
+                  ></textarea>
+                </div>
+              </div>
+              <div class="post-jobs-form-row">
+                <div class="post-jobs-form-group">
+                  <div class="post-jobs-add-btn">
+                    <button class="btn btn-outline-primary mt-2" type="submit">
+                      Update Job
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Details Modal -->
+  <div
+    class="modal fade"
+    id="deleteModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="deleteModalTitle"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">...</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
