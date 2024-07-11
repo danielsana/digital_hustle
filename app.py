@@ -474,26 +474,20 @@ def postjob():
 #make search for user posted jobs
 @app.route('/company/search', methods=['POST','GET'])
 def company_search():
+    locations = get_job_locations()
+    jobType = get_jobType()
+    salaryRange = get_salaryRange()
+    skills = get_skills()
     job_title = request.form.get('job_title')
-    location = request.form.get('location')
-    job_type = request.form.get('job_type')
-    salary_range = request.form.get('search_salary')
     page = int(request.form.get('currentPage', 1))
-    tag = request.form.get('tag')
-    if tag == "None" or tag == "":
-        tag = None
-    if location == "None" or location == "Select Location":
-        location = None
-    if job_type == "None" or location == "Job Type":
-        job_type = None
-    
-    company_posted_jobs = get_company_posted_jobs(session['id'],job_title=job_title, location=location, job_type=job_type, salary_range=salary_range, tag=tag)
+    company_posted_jobs = get_company_posted_jobs(session['id'],job_title=job_title)
     per_page = 5
     pages = math.ceil(len(company_posted_jobs) / per_page)
     start = (page - 1) * per_page
     end = start + per_page
     paginated_data = company_posted_jobs[start:end]
-    return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages  )})
+    print("company posted jobs are", paginated_data)
+    return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages, locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)})
 
 @app.route('/company/applications')
 @login_required
@@ -704,4 +698,4 @@ def updateCandidateSkills():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(port=8080)
+    app.run()
