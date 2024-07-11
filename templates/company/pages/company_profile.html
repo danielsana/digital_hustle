@@ -37,7 +37,8 @@
                 {% if profile.company_description %}
                 {{ profile.company_description }}
                 {% else %}
-                    Company Information Not Available
+                    <span class="text-danger"> Update Company Information </span>
+                    
                 {% endif %}
             </p>
         </div>
@@ -51,31 +52,61 @@
                     <li class="profile-key-items">Name:</li>
                     <li class="profile-key-items">Email:</li>                    
                     <li class="profile-key-items">Location:</li>
-                    <li class="profile-key-items">Speciality:</li>
-                    <li class="profile-key-items profile-key-title">Contacts:</li>
+                    <li class="profile-key-items profile-key-title">Comapany Contacts:</li>
                     <li class="profile-key-items">Phone:</li>
-                    <li class="profile-key-items profile-key-title">Undertakings</li>
-                    <li class="profile-key-items">1</li>
-                    <li class="profile-key-items">2</li>
+                    <li class="profile-key-items profile-key-title">Administrator</li>
+                    <li class="profile-key-items">Admininistrator Name:</li>
+                    <li class="profile-key-items">Administrator Phone:</li>
                 </ul>
             </div>
             <div class="profile-values">
                 <ul>
                     <li class="profile-value-items">{{ profile.company_name}}</li>
                     <li class="profile-value-items">{{ profile.company_email}}</li>
-                    <li class="profile-value-items">{{ profile.company_location}}</li>
-                    <li class="profile-value-items">Graphics Design</li>
+                    <li class="profile-value-items">
+                        {% if profile.company_location %}
+                            {{ profile.company_location}}
+                        {% else %}
+                            <span class="text-danger"> Update Company Location</span>
+                        {% endif %}</li>
                     <li class="profile-value-items">-</li>
                     <li class="profile-value-items">
                         {% if profile.company_phone %}
-                        {{ profile.company_phone }}
+                            {{ profile.company_phone }}
                         {% else %}
-                            Number not available
+                            <span class="text-danger"> Update Company Phone Number</span>
                         {% endif %}
                     </li>
                     <li class="profile-value-items">-</li>
-                    <li class="profile-value-items">Print Media, Banners</li>
-                    <li class="profile-value-items">- </li>
+                    <li class="profile-value-items">
+                        <span class="me-1">
+                            {% if profile.admin_fname  != 'None' %}
+                                {{ profile.admin_fname }}
+                            {% else %}
+                                <span class="text-danger">Update Admin Info </span>
+                            {% endif %}
+                        </span>
+                        <span class="me-1">
+                            {% if profile.admin_lname != 'None' %}
+                                {{ profile.admin_lname }}
+                            {% else %}
+                                
+                            {% endif %}
+                        </span>                        
+                        <span class="me-1">
+                            {% if profile.admin_surname  != 'None' %}
+                                {{ profile.admin_surname }}
+                            {% else %}
+                                
+                            {% endif %}
+                        </span>
+                    </li>
+                    <li class="profile-value-items">
+                        {% if profile.admin_phone != 'None' %}
+                            {{ profile.admin_phone }}
+                        {% else %}
+                            <span class="text-danger">Update Admin Phone </span>
+                        {% endif %} </li>
                 </ul>
             </div>
         </div>
@@ -136,13 +167,12 @@
                 <input type="file" name="company_logo" class="form-control">
               </div>
             </div>
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <div style="align-items: end;">
+                <hr style="border-style: double; border-color: rgb(154, 154, 225); border-width: 1px;">
+                <button type="submit" class="btn btn-primary">Save Changes</button>            
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
           </form>          
-      </div>
-      <div class="modal-footer">
-        
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-        
       </div>
     </div>
   </div>
