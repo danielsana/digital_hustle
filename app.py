@@ -598,6 +598,10 @@ def update_certifications():
 @app.route('/candidate/update-skills-attributes', methods=['POST', 'GET'])
 @login_required
 def updateCandidateSkills():
+    skills = get_skills()
+    languages = get_languages()
+    softskills = get_soft_skills()
+    
     connection = pymysql.connect(**db_config)
     cursor = connection.cursor()
     if request.method == 'POST':
@@ -632,10 +636,14 @@ def updateCandidateSkills():
                 cursor.execute(languages_sql, (candidate_id, language_id))
             
             connection.commit()
-            return render_template('candidate/components/profile.html', success='Skills updated successfully')
+            return render_template('candidate/components/profile.html', skills = skills, softskills = softskills , languages = languages, success='Skills updated successfully')
+
+           
         except Exception as e:
             connection.rollback()
-            return render_template('candidate/components/profile.html', error=str(e))
+            
+            return render_template('candidate/components/profile.html', skills = skills, softskills = softskills , languages = languages, error=str(e))
+            
     else:
         return render_template('candidate/components/profile.html')
 
