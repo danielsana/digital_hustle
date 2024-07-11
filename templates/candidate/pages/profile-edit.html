@@ -35,11 +35,12 @@
     <div class="profile-bio-wrapper">
         <div class="profile-image-box">
             <div class="profile-image" style="margin-bottom: 20px;">
-                <img src="../../../static/img/candidate/{{session['candidate_profile_pic']}}" alt="" class="profile-img">
+                <img src="{{ url_for('static', filename='/candidate_profile_pics/' + session['profile_pic']) }}" alt="Profile Picture" class="profile-img" style="object-fit: contain; ">
+               
             </div>
 
             <div class="profile-image-link">
-                <a href="">Change Photo</a>
+                <a href="{{ url_for('upload_photo') }}">Change Photo</a>
             </div>
 
         </div>
@@ -153,10 +154,19 @@
     </div>
 </div>
 
+
 <div class="profile-bio-container">
     <div class="profile-bio-wrapper">
         <div class="profile-bio">
-            <form action="">
+            {% if error %}
+                <div class="da-alert da-alert-danger" role="alert">
+                    {{error}}
+                    <button type="button" class="da-close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endif %}
+            <form action="/candidate/update-skills-attributes" method="POST">
                 <div class="profile-form-row">
                     <div class="profile-form-group-col">
                         <h5>Skills and Attributes</h5>
@@ -167,7 +177,9 @@
                         <label for="" class="profile-label">Technical Skills</label>
                         <select class="profile-select" name="technical_skills[]" id="technical_skills" multiple>
                             
-                                <option value=""></option>
+                            {% for skill in skills %}
+                                <option value="{{ skill[0] }}">{{ skill[1] }}</option>
+                            {% endfor %}
                             
                         </select>
                         <small class="form-error">
@@ -180,7 +192,9 @@
                         <label for="" class="profile-label">Soft Skills</label>
                         <select class="profile-select" name="soft_skills[]" id="soft_skills" multiple>
                             
-                                <option value=""></option>
+                            {% for softskill in softskills %}
+                                 <option value="{{ softskill[0] }}">{{ softskill[1] }}</option>
+                            {% endfor %}
                            
                         </select>
                         <small class="form-error">
@@ -193,7 +207,9 @@
                         <label for="" class="profile-label">Languages</label>
                         <select class="profile-select" name="languages[]" id="languages" multiple>
                             
-                                <option value=""></option>
+                            {% for language in languages %}
+                                 <option value="{{ language[0] }}">{{ language[1] }}</option>
+                            {% endfor %}
                             
                         </select>
                         <small class="form-error">
@@ -214,57 +230,80 @@
 <div class="profile-bio-container">
     <div class="profile-bio-wrapper">
         <div class="profile-bio">
-            <form action="">
+            <form action="/candidate/update-work-experience" method="POST">
                 <div class="profile-form-row">
                     <div class="profile-form-group-col">
-                        <h5>Experience and Certifications</h5>
+                        <h5>Work Experience</h5>
                     </div>
                 </div>
                 <div class="profile-form-row">
                     <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Work Experience 1</label>
-                        <input type="text" class="profile-input" name="work_experience">
-                        <small class="form-error">
-                            
-                        </small>
+                        <label for="company_name" class="profile-label">Company Name</label>
+                        <input type="text" class="profile-input" name="company_name" id="company_name" value="{{ session['company_name'] }}" required>
+                    </div>
+                    <div class="profile-form-group-col">
+                        <label for="job_title" class="profile-label">Job Title</label>
+                        <input type="text" class="profile-input" name="job_title" id="job_title" value="{{ session['job_title'] }}" required>
+                    </div>
+                    <div class="profile-form-group-col">
+                        <label for="from_date" class="profile-label">From Date</label>
+                        <input type="date" class="profile-input" name="from_date" id="from_date" value="{{ session['from_date'] }}" required>
+                    </div>
+                    <div class="profile-form-group-col">
+                        <label for="to_date" class="profile-label">To Date</label>
+                        <input type="date" class="profile-input" name="to_date" id="to_date" value="{{ session['to_date'] }}" required>
+                    </div>
+                    <div class="profile-form-group-col">
+                        <label for="description" class="profile-label">Description</label>
+                        <textarea class="profile-input" name="description" id="description" rows="4" required>{{ session['description'] }}</textarea>
                     </div>
                 </div>
                 <div class="profile-form-row">
                     <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Work Experience 2</label>
-                        <input type="text" class="profile-input" name="work_experience">
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Certifications 1</label>
-                        <input type="text" class="profile-input" name="certifications">
-                        <small class="form-error">
-                           
-                        </small>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Certifications 2</label>
-                        <input type="text" class="profile-input" name="certifications">
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <button class="btn btn-blue2">Update</button>
+                        <button type="submit" class="btn btn-blue2">Update</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<div class="profile-bio-container">
+    <div class="profile-bio-wrapper">
+        <div class="profile-bio">
+            <form action="/candidate/update-certifications" method="POST">
+                <div class="profile-form-row">
+                    <div class="profile-form-group-col">
+                        <h5>Certifications</h5>
+                    </div>
+                </div>
+                <div class="profile-form-row">
+                    <div class="profile-form-group-col">
+                        <label for="company_name" class="profile-label">Certification Name</label>
+                        <input type="text" class="profile-input" name="certification_name" id="company_name" value="{{ session['certification_name'] }}" required>
+                    </div>
+                  
+                    <div class="profile-form-group-col">
+                        <label for="from_date" class="profile-label">From Date</label>
+                        <input type="date" class="profile-input" name="date_awarded" id="from_date" value="{{ session['date_awarded'] }}" required>
+                    </div>
+                    <div class="profile-form-group-col">
+                        <label for="job_title" class="profile-label">Certification Description</label>
+                        <input type="text" class="profile-input" name="description" id="job_title" value="{{ session['desc'] }}" required>
+                    </div>
+                   
+                </div>
+                <div class="profile-form-row">
+                    <div class="profile-form-group-col">
+                        <button type="submit" class="btn btn-blue2">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 
 <div class="profile-bio-container">
     <div class="profile-bio-wrapper">
