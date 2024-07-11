@@ -23,6 +23,24 @@ def get_locations():
     connection.close()
     return locations
 
+def get_languages():
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM languages")
+    languages = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return languages
+
+def get_soft_skills():
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM soft_skills")
+    softskills = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return softskills
+
 
 def get_jobType():
     connection = pymysql.connect(**db_config)
