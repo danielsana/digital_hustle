@@ -480,14 +480,14 @@ def company_search():
     skills = get_skills()
     job_title = request.form.get('job_title')
     page = int(request.form.get('currentPage', 1))
-    
+    company_posted_jobs = get_company_posted_jobs(session['id'],job_title=job_title)
     per_page = 5
     pages = math.ceil(len(company_posted_jobs) / per_page)
     start = (page - 1) * per_page
     end = start + per_page
     paginated_data = company_posted_jobs[start:end]
     print("company posted jobs are", paginated_data)
-    return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages  )})
+    return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages, locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)})
 
 @app.route('/company/applications')
 @login_required
