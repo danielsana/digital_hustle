@@ -18,13 +18,19 @@
             <li class="nav-item">
                 <a class="nav-link" href="/find-talent">Find Talent</a>
             </li>
-            {% if session['key'] %}
-            <li class="nav-item">
-                <a class="nav-link" style="border: 2px solid #007BFF; " href="/company/dashboard">Dashboard</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" style="border: 2px solid #007BFF; " href="/logout">Logout</a>
-            </li>
+            {% if session %}
+                {% if session['candidate_key'] %}
+                <li class="nav-item">
+                    <a class="nav-link" style="border: 2px solid #007BFF; " href="/candidate/dashboard">Dashboard</a>
+                </li>
+                {% elif session['company_key'] %}
+                <li class="nav-item">
+                    <a class="nav-link" style="border: 2px solid #007BFF; " href="/company/dashboard">Dashboard</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" style="border: 2px solid #007BFF; " href="/logout">Logout</a>
+                </li>
             {% else %}
             <li class="nav-item">
                 <a class="nav-link" style="border: 2px solid #007BFF; border-radius: 10px;"  href="/choose">Sign Up</a>
