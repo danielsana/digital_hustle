@@ -32,12 +32,22 @@ db_config = {
 
 def login_required(f):
     @wraps(f)
+    # return session
     def decorated_function(*args, **kwargs):
-        if 'key' not in session:
-            flash('Kindly login to access this page.', 'danger')
-            return redirect(url_for('choose'))
-        return f(*args, **kwargs)
+        # if 'candidate_key' not in session:
+        #     flash('Kindly login to access this page.', 'danger')
+        #     return redirect(url_for('choose'))
+        # elif 'company_key' not in session:
+        #     flash('Kindly login to access this page.', 'danger')
+        #     return redirect(url_for('choose'))  
+        # else:            
+        #     return f(*args, **kwargs)
+        if session['company_key']!= None and session['candidate_key']!= None: 
+            return redirect(url_for('choose'))  
+        else:            
+            return f(*args, **kwargs)
     return decorated_function
+
 
 @app.route('/')
 def home():
@@ -172,11 +182,12 @@ def candidateLogin():
             candidate = cursor.fetchone()
             hashed_password = candidate[6]
             if hash_verify(candidate_password, hashed_password):
-                session['key'] = candidate[0]
+                session['candidate_key'] = candidate[0]
                 session['email'] = candidate[1]
                 session['fname'] = candidate[2]
                 session['surname'] = candidate[4]
                 session['candidate_profile_pic'] = candidate[8]
+                session['company_key'] = None
 
                 return redirect('/candidate/dashboard')
             
@@ -263,8 +274,10 @@ def companyReg():
 @app.route('/company/login', methods = ['POST', 'GET'])
 def companyLogin():
     if request.method == 'POST':
+        
         company_email = request.form['company_email']
         company_password = request.form['password']
+
 
         sql = 'select * from companies where company_email = %s'
 
@@ -277,12 +290,15 @@ def companyLogin():
             return render_template('company/login.html', error = 'Company Email not Found')
         else:
             company = cursor.fetchone()
+            print('the Company',company)
             hashed_password = company[9]
             if hash_verify(company_password, hashed_password):
-                session['key'] = company[1]
-                session['id'] = company[0]
+                session['company_key'] = company[1]            
+                session['id'] = company[0]   
+                session['company_email'] = company[2]  
+                session['candidate_key'] = None                         
 
-                return redirect(url_for('company_dashboard'))
+                return redirect('/company/dashboard')
             else:
                 return render_template('company/login.html', error = 'Invalid Password')
     else:
@@ -291,14 +307,14 @@ def companyLogin():
 
 @app.route('/candidate/dashboard')
 def candidate_dashboard():
-    if 'key' in session:
+    if session['candidate_key']:
         return render_template('candidate/dashboard.html')
     else:
-        return redirect('/candidate/login')
+       return render_template('403.html')
 
 @app.route('/candidate/profile')
 def candidate_profile():
-    if 'key' in session:
+    if session['candidate_key']:
         skills = get_skills()
         languages = get_languages()
         softskills = get_soft_skills()
@@ -349,13 +365,16 @@ def candidate_profile():
         
 
         return render_template('candidate/components/profile.html', skills = skills, softskills = softskills , languages = languages)
-    else:
-        return redirect('/candidate/login')
+    else:        
+       return render_template('403.html')
 
 @app.route('/company/dashboard')
 @login_required
 def company_dashboard():
-   return render_template('company/dashboard.html')
+   if session['company_key']: 
+        return render_template('company/dashboard.html')
+   else:
+       return render_template('403.html')
 
 @app.route('/company/profile', methods=['POST', 'GET'])
 @login_required
@@ -423,7 +442,6 @@ def postjob():
     connection = pymysql.connect(**db_config)
     cursor = connection.cursor()
     if request.method == 'POST' :
-        job_id = request.form.get('job_id')
         job_title = request.form.get('job_title')
         job_location_id = request.form.get('job_location_id')
         jobtype_id = request.form.get('jobtype_id')
@@ -431,7 +449,7 @@ def postjob():
         job_skills = request.form.getlist('job_skills[]')  
         job_description = request.form.get('job_description')
         company_id = session['id']
-        print("job_id is",job_id)
+        
         if len(job_title) <= 0:
             flash('Job Title Cannot be Empty', 'danger')
             return redirect(url_for('postjob'))
@@ -451,35 +469,20 @@ def postjob():
             flash('Job Description Cannot be Empty', 'danger')
             return redirect(url_for('postjob'))
         else:
-            if job_id: #updating the jobs
-                job_data = (job_title, job_location_id, jobtype_id, salary_range_id, job_description, job_id)
-                job_sql = 'UPDATE postedjobs SET job_title=%s, job_location_id=%s, jobtype_id=%s, salary_range_id=%s, job_description=%s WHERE id=%s'
-                cursor.execute(job_sql, job_data)
-                
-                delete_skill_sql = 'DELETE FROM postedjobs_skills WHERE posted_job_id=%s'
-                cursor.execute(delete_skill_sql, (job_id,))
-                
-                skill_sql = 'INSERT INTO postedjobs_skills (posted_job_id, skill_id) VALUES (%s, %s)'
-                for skill_id in job_skills:
-                    cursor.execute(skill_sql, (job_id, skill_id))
-                connection.commit()
-                flash("Job Updated Successfully", 'success')
-                return redirect(url_for('postjob'))
-            else:
-                job_data = (job_title, job_location_id, jobtype_id, salary_range_id, job_description, company_id)
-                job_sql = 'INSERT INTO postedjobs (job_title, job_location_id, jobtype_id, salary_range_id, job_description, company_id) VALUES (%s, %s, %s, %s, %s, %s)'
-                cursor.execute(job_sql, job_data)
-                connection.commit()
+            job_data = (job_title, job_location_id, jobtype_id, salary_range_id, job_description, company_id)
+            job_sql = 'INSERT INTO postedjobs (job_title, job_location_id, jobtype_id, salary_range_id, job_description, company_id) VALUES (%s, %s, %s, %s, %s, %s)'
+            cursor.execute(job_sql, job_data)
+            connection.commit()
 
-                # Get the last inserted job id
-                posted_job_id = cursor.lastrowid
+            # Get the last inserted job id
+            posted_job_id = cursor.lastrowid
 
-                skill_sql = 'INSERT INTO  postedjobs_skills (posted_job_id, skill_id) VALUES (%s, %s)'
-                for skill_id in job_skills:
-                    cursor.execute(skill_sql, (posted_job_id, skill_id))
-                connection.commit()
-                flash("Job Posted Successfully", 'success')
-                return redirect(url_for('postjob'))
+            skill_sql = 'INSERT INTO  postedjobs_skills (posted_job_id, skill_id) VALUES (%s, %s)'
+            for skill_id in job_skills:
+                cursor.execute(skill_sql, (posted_job_id, skill_id))
+            connection.commit()
+            flash("Job Posted Successfully", 'success')
+            return redirect(url_for('postjob'))
     else:
         locations = get_job_locations()
         jobType = get_jobType()
@@ -504,74 +507,6 @@ def company_search():
     paginated_data = company_posted_jobs[start:end]
     print("company posted jobs are", paginated_data)
     return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages, locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)})
-
-#fetching data for editing jobs 
-@app.route('/company/editjob/<int:job_id>', methods=['GET'])
-@login_required
-def edit_job(job_id):
-    connection = pymysql.connect(**db_config)
-    cursor = connection.cursor()
-    
-    job_sql = '''
-    SELECT id, job_title, job_location_id, jobtype_id, salary_range_id, job_description, updated_at, 
-           (SELECT location_name FROM locations WHERE id = postedjobs.job_location_id) as job_location_name, 
-           (SELECT jobtype_name FROM jobtypes WHERE id = postedjobs.jobtype_id) as jobtype_name, 
-           (SELECT salary_range FROM salaryranges WHERE id = postedjobs.salary_range_id) as salary_range
-    FROM postedjobs 
-    WHERE id = %s
-    '''
-    cursor.execute(job_sql, (job_id,))
-    job_data = cursor.fetchone()
-
-    skill_sql = 'SELECT skill_name FROM skills JOIN postedjobs_skills ON skills.id = postedjobs_skills.skill_id WHERE postedjobs_skills.posted_job_id = %s'
-    cursor.execute(skill_sql, (job_id,))
-    job_skills = [skill[0] for skill in cursor.fetchall()]
-    
-    # Convert job_data to a dictionary
-    job_dict = {
-        'job_id': job_data[0],
-        'job_title': job_data[1],
-        'job_location_id': job_data[2],
-        'jobtype_id': job_data[3],
-        'salary_range_id': job_data[4],
-        'job_description': job_data[5],
-        'job_location_name': job_data[7],
-        'jobtype_name': job_data[8],
-        'salary_range_name': job_data[9],
-        'date':job_data[6],
-        'job_skills': job_skills
-    }
-
-    return jsonify(job_dict)
-
-#deleting jobs 
-@app.route('/company/deletejob/', methods=['POST'])
-@login_required
-def deletejob():
-    job_id=request.form.get('job_id')
-    if request.method == "POST":
-        connection = pymysql.connect(**db_config)
-        cursor = connection.cursor()
-        try:
-            delete_job_query ='''DELETE FROM `postedjobs` WHERE id = %s'''
-            cursor.execute(delete_job_query, (job_id,))
-            delete_skill_query = '''DELETE FROM postedjobs_skills WHERE posted_job_id=%s'''
-            cursor.execute(delete_skill_query, (job_id,))
-            connection.commit()
-            flash("Job Deleted Successfully", 'success')
-            # return redirect(url_for('postjob'))
-        except Exception as e:
-            connection.rollback()
-            flash("Job Not Deleted Successfully: " + str(e), 'danger')
-
-        finally:
-                cursor.close()
-                connection.close()
-    else:
-        flash("Job ID is missing", 'danger')
-
-    return redirect(url_for('postjob'))
-
 
 @app.route('/company/applications')
 @login_required
