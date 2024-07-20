@@ -42,10 +42,14 @@ def login_required(f):
         #     return redirect(url_for('choose'))  
         # else:            
         #     return f(*args, **kwargs)
-        if session['company_key']!= None and session['candidate_key']!= None: 
-            return redirect(url_for('choose'))  
-        else:            
-            return f(*args, **kwargs)
+        try:
+            if not(session['key']):
+                return redirect(url_for('choose'))
+            else:            
+                return f(*args, **kwargs)
+        except:
+                flash("Login to access the dashboard")
+                return redirect(url_for('choose'))
     return decorated_function
 
 
@@ -187,7 +191,7 @@ def candidateLogin():
                 session['fname'] = candidate[2]
                 session['surname'] = candidate[4]
                 session['candidate_profile_pic'] = candidate[8]
-                session['company_key'] = None
+                session['key'] = "candidate"
 
                 return redirect('/candidate/dashboard')
             
@@ -294,7 +298,7 @@ def companyLogin():
                 session['company_key'] = company[1]            
                 session['id'] = company[0]   
                 session['company_email'] = company[2]  
-                session['candidate_key'] = None                         
+                session['key'] = "company"                         
 
                 return redirect('/company/dashboard')
             else:
@@ -306,7 +310,7 @@ def companyLogin():
 @app.route('/candidate/dashboard')
 @login_required
 def candidate_dashboard():
-    if session['candidate_key']:
+    if session['key'] == "candidate" :
 
         return render_template('candidate/dashboard.html')
     else:
@@ -315,7 +319,7 @@ def candidate_dashboard():
 @app.route('/candidate/profile')
 @login_required
 def candidate_profile():
-    if session['candidate_key']:
+    if session['key'] == "candidate" :
         skills = get_skills()
         languages = get_languages()
         softskills = get_soft_skills()
@@ -370,7 +374,7 @@ def candidate_profile():
 @app.route('/company/dashboard')
 @login_required
 def company_dashboard():
-   if session['company_key']: 
+   if session['key'] == "company" : 
         company_id = session['id']
         connection = pymysql.connect(**db_config)
         cursor = connection.cursor(pymysql.cursors.DictCursor)
@@ -385,7 +389,7 @@ def company_dashboard():
 @app.route('/company/profile', methods=['POST', 'GET'])
 @login_required
 def company_profile():
-    if session['company_key']: 
+    if session['key'] == "company" : 
         connection = pymysql.connect(**db_config)
         cursor = connection.cursor(pymysql.cursors.DictCursor)
         company_id = session['id']
@@ -448,7 +452,7 @@ def company_profile():
 @app.route('/company/postjob', methods=['POST', 'GET'])
 @login_required
 def postjob():
-    if session['company_key']:        
+    if session['key'] == "company" :        
         connection = pymysql.connect(**db_config)
         cursor = connection.cursor()
         if request.method == 'POST' :
@@ -506,7 +510,7 @@ def postjob():
 @app.route('/company/search', methods=['POST','GET'])
 @login_required
 def company_search():
-    if session['company_key']:
+    if session['key'] == "company" :
         locations = get_job_locations()
         jobType = get_jobType()
         salaryRange = get_salaryRange()
@@ -528,7 +532,7 @@ def company_search():
 @app.route('/company/applications')
 @login_required
 def company_applications():
-    if session['company_key']:
+    if session['key'] == "company" :
         return render_template('/company/applications.html')
     else:
         return render_template('403.html')
@@ -554,7 +558,7 @@ def about():
 @app.route('/candidate/update-bio',  methods = ['POST', 'GET'])
 @login_required
 def update_bio():
-    if session['candidate_key']:
+    if session['key'] == "candidate" :
         if request.method == 'POST':
             firstname = request.form['fname']
             lastname = request.form['lname']
@@ -589,7 +593,7 @@ def update_bio():
 @app.route('/candidate/upload-photo', methods=['GET', 'POST'])
 @login_required
 def upload_photo():
-    if session['candidate_key']:
+    if session['key'] == "candidate" :
         if request.method == 'POST':
             if 'profile_pic' not in request.files:
                 flash('No file part')
@@ -619,7 +623,7 @@ def upload_photo():
 @app.route('/candidate/update-certifications', methods=['GET', 'POST'])
 @login_required
 def update_work_experience():
-    if session['candidate_key']:
+    if session['key'] == "candidate" :
         
         if request.method == 'POST':
             
@@ -647,7 +651,7 @@ def update_work_experience():
 @app.route('/candidate/update-work-experience', methods=['GET', 'POST'])
 @login_required
 def update_certifications():
-    if session['candidate_key']:        
+    if session['key'] == "candidate" :        
         if request.method == 'POST':            
             company_name = request.form['company_name']
             job_title = request.form['job_title']
@@ -672,7 +676,7 @@ def update_certifications():
 @app.route('/candidate/update-skills-attributes', methods=['POST', 'GET'])
 @login_required
 def updateCandidateSkills():
-    if session['candidate_key']:
+    if session['key'] == "candidate" :
         skills = get_skills()
         languages = get_languages()
         softskills = get_soft_skills()
