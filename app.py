@@ -42,10 +42,14 @@ def login_required(f):
         #     return redirect(url_for('choose'))  
         # else:            
         #     return f(*args, **kwargs)
-        if session['company_key']!= None and session['candidate_key']!= None: 
-            return redirect(url_for('choose'))  
-        else:            
-            return f(*args, **kwargs)
+        try:
+            if not(session['key']):
+                return redirect(url_for('choose'))
+            else:            
+                return f(*args, **kwargs)
+        except:
+                flash("Login to access the dashboard")
+                return redirect(url_for('choose'))
     return decorated_function
 
 
@@ -187,7 +191,7 @@ def candidateLogin():
                 session['fname'] = candidate[2]
                 session['surname'] = candidate[4]
                 session['candidate_profile_pic'] = candidate[8]
-                session['company_key'] = None
+                session['key'] = "candidate"
 
                 return redirect('/candidate/dashboard')
             
@@ -278,7 +282,6 @@ def companyLogin():
         company_email = request.form['company_email']
         company_password = request.form['password']
 
-
         sql = 'select * from companies where company_email = %s'
 
         connection = pymysql.connect(host='localhost', user='root',password='', database='hustle_db' )
@@ -290,13 +293,12 @@ def companyLogin():
             return render_template('company/login.html', error = 'Company Email not Found')
         else:
             company = cursor.fetchone()
-            print('the Company',company)
             hashed_password = company[9]
             if hash_verify(company_password, hashed_password):
                 session['company_key'] = company[1]            
                 session['id'] = company[0]   
                 session['company_email'] = company[2]  
-                session['candidate_key'] = None                         
+                session['key'] = "company"                         
 
                 return redirect('/company/dashboard')
             else:
@@ -306,15 +308,18 @@ def companyLogin():
     
 
 @app.route('/candidate/dashboard')
+@login_required
 def candidate_dashboard():
-    if session['candidate_key']:
+    if session['key'] == "candidate" :
+
         return render_template('candidate/dashboard.html')
     else:
        return render_template('403.html')
 
 @app.route('/candidate/profile')
+@login_required
 def candidate_profile():
-    if session['candidate_key']:
+    if session['key'] == "candidate" :
         skills = get_skills()
         languages = get_languages()
         softskills = get_soft_skills()
@@ -322,7 +327,7 @@ def candidate_profile():
         connection = pymysql.connect(host='localhost', user='root', password='', database='hustle_db')
         sql2 = "SELECT * FROM candidates WHERE id = %s"
         cursor2 = connection.cursor()
-        cursor2.execute(sql2, session['key'])
+        cursor2.execute(sql2, session['candidate_key'])
         candidate = cursor2.fetchone()
 
         if candidate:
@@ -341,7 +346,7 @@ def candidate_profile():
         # Work experience 
         sql = "SELECT * FROM workexperiences WHERE candidate_id = %s"
         cursor = connection.cursor()
-        cursor.execute(sql, session['key'])
+        cursor.execute(sql, session['candidate_key'])
         work_experience = cursor.fetchone()
 
         if work_experience:
@@ -354,15 +359,13 @@ def candidate_profile():
         # Certifications
         sql = "SELECT * FROM certifications WHERE candidate_id = %s"
         cursor1 = connection.cursor()
-        cursor1.execute(sql, session['key'])
+        cursor1.execute(sql, session['candidate_key'])
         certifications = cursor1.fetchone()
 
         if certifications:
             session['certification_name'] = certifications[2]
             session['date_awarded'] = certifications[3]
-            session['desc'] = certifications[4]
-
-        
+            session['desc'] = certifications[4]        
 
         return render_template('candidate/components/profile.html', skills = skills, softskills = softskills , languages = languages)
     else:        
@@ -371,147 +374,168 @@ def candidate_profile():
 @app.route('/company/dashboard')
 @login_required
 def company_dashboard():
-   if session['company_key']: 
-        return render_template('company/dashboard.html')
+   if session['key'] == "company" : 
+        company_id = session['id']
+        connection = pymysql.connect(**db_config)
+        cursor = connection.cursor(pymysql.cursors.DictCursor)
+        sql= 'select * from postedjobs where company_id = %s'
+        cursor.execute(sql,(company_id))
+        jobs=cursor.fetchall()
+        jobcount=len(jobs)
+        return render_template('company/dashboard.html',jobcounts=jobcount)
    else:
        return render_template('403.html')
 
 @app.route('/company/profile', methods=['POST', 'GET'])
 @login_required
 def company_profile():
-    connection = pymysql.connect(**db_config)
-    cursor = connection.cursor(pymysql.cursors.DictCursor)
-    company_id = session['id']
-    if request.method == 'POST':
-        company_name = request.form.get('company_name')
-        company_email = request.form.get('company_email')
-        company_phone = request.form.get('company_phone')
-        company_location = request.form.get('company_location')
-        admin_fname = request.form.get('admin_fname')  
-        admin_lname = request.form.get('admin_lname')
-        admin_surname = request.form.get('admin_surname')
-        admin_phone = request.form.get('admin_phone')  
-        company_description = request.form.get('company_description')  
+    if session['key'] == "company" : 
+        connection = pymysql.connect(**db_config)
+        cursor = connection.cursor(pymysql.cursors.DictCursor)
+        company_id = session['id']
+        if request.method == 'POST':
+            company_name = request.form.get('company_name')
+            company_email = request.form.get('company_email')
+            company_phone = request.form.get('company_phone')
+            company_location = request.form.get('company_location')
+            admin_fname = request.form.get('admin_fname')  
+            admin_lname = request.form.get('admin_lname')
+            admin_surname = request.form.get('admin_surname')
+            admin_phone = request.form.get('admin_phone')  
+            company_description = request.form.get('company_description')  
 
-        company_logo = request.files['company_logo']
-        if company_logo and company_logo.filename != '':
-            filename = secure_filename(company_logo.filename)
-            logo_path = os.path.join('static/company_logos', filename)
-            company_logo.save(logo_path)
+            company_logo = request.files['company_logo']
+            if company_logo and company_logo.filename != '':
+                filename = secure_filename(company_logo.filename)
+                logo_path = os.path.join('static/company_logos', filename)
+                company_logo.save(logo_path)
 
-            sql = """
-                UPDATE companies
-                SET company_name=%s, company_email=%s, company_phone=%s, company_location=%s, 
-                    admin_fname=%s, admin_lname=%s, admin_surname=%s, admin_phone=%s, 
-                    company_description=%s, company_logo=%s
-                WHERE id=%s
-            """
-            cursor.execute(sql, (
-                company_name, company_email, company_phone, company_location, 
-                admin_fname, admin_lname, admin_surname, admin_phone, 
-                company_description, filename, company_id
-            ))
+                sql = """
+                    UPDATE companies
+                    SET company_name=%s, company_email=%s, company_phone=%s, company_location=%s, 
+                        admin_fname=%s, admin_lname=%s, admin_surname=%s, admin_phone=%s, 
+                        company_description=%s, company_logo=%s
+                    WHERE id=%s
+                """
+                cursor.execute(sql, (
+                    company_name, company_email, company_phone, company_location, 
+                    admin_fname, admin_lname, admin_surname, admin_phone, 
+                    company_description, filename, company_id
+                ))
+            else:
+                sql = """
+                    UPDATE companies
+                    SET company_name=%s, company_email=%s, company_phone=%s, company_location=%s, 
+                        admin_fname=%s, admin_lname=%s, admin_surname=%s, admin_phone=%s, 
+                        company_description=%s
+                    WHERE id=%s
+                """
+                cursor.execute(sql, (
+                    company_name, company_email, company_phone, company_location, 
+                    admin_fname, admin_lname, admin_surname, admin_phone, 
+                    company_description, company_id
+                ))
+            connection.commit()
+            connection.close()
+            flash('Profile updated successfully','success')
+            return redirect(url_for('company_profile'))
+
         else:
-            sql = """
-                UPDATE companies
-                SET company_name=%s, company_email=%s, company_phone=%s, company_location=%s, 
-                    admin_fname=%s, admin_lname=%s, admin_surname=%s, admin_phone=%s, 
-                    company_description=%s
-                WHERE id=%s
-            """
-            cursor.execute(sql, (
-                company_name, company_email, company_phone, company_location, 
-                admin_fname, admin_lname, admin_surname, admin_phone, 
-                company_description, company_id
-            ))
-        connection.commit()
-        connection.close()
-        flash('Profile updated successfully','success')
-        return redirect(url_for('company_profile'))
-
+            sql = 'SELECT * FROM companies WHERE id=%s'
+            cursor.execute(sql, company_id)
+            company_pro = cursor.fetchone()
+            connection.close()
+            return render_template('/company/company-profile.html', profile=company_pro)
     else:
-        sql = 'SELECT * FROM companies WHERE id=%s'
-        cursor.execute(sql, company_id)
-        company_pro = cursor.fetchone()
-        connection.close()
-        return render_template('/company/company-profile.html', profile=company_pro)
-    
+        return render_template('403.html')
+   
 @app.route('/company/postjob', methods=['POST', 'GET'])
 @login_required
 def postjob():
-    connection = pymysql.connect(**db_config)
-    cursor = connection.cursor()
-    if request.method == 'POST' :
-        job_title = request.form.get('job_title')
-        job_location_id = request.form.get('job_location_id')
-        jobtype_id = request.form.get('jobtype_id')
-        salary_range_id = request.form.get('salary_range_id')
-        job_skills = request.form.getlist('job_skills[]')  
-        job_description = request.form.get('job_description')
-        company_id = session['id']
-        
-        if len(job_title) <= 0:
-            flash('Job Title Cannot be Empty', 'danger')
-            return redirect(url_for('postjob'))
-        if len(job_location_id) <= 0:
-            flash('Job Location Cannot be Empty', 'danger')
-            return redirect(url_for('postjob'))
-        if len(jobtype_id) <= 0:
-            flash('Job Type Cannot be Empty', 'danger')
-            return redirect(url_for('postjob'))
-        if len(salary_range_id) <= 0:
-            flash('Salary Range Cannot be Empty', 'danger')
-            return redirect(url_for('postjob'))
-        if len(job_skills) <= 0:
-            flash('Job Skills Cannot be Empty', 'danger')
-            return redirect(url_for('postjob'))
-        if len(job_description) <= 0:
-            flash('Job Description Cannot be Empty', 'danger')
-            return redirect(url_for('postjob'))
+    if session['key'] == "company" :        
+        connection = pymysql.connect(**db_config)
+        cursor = connection.cursor()
+        if request.method == 'POST' :
+            job_title = request.form.get('job_title')
+            job_location_id = request.form.get('job_location_id')
+            jobtype_id = request.form.get('jobtype_id')
+            salary_range_id = request.form.get('salary_range_id')
+            job_skills = request.form.getlist('job_skills[]')  
+            job_description = request.form.get('job_description')
+            company_id = session['id']
+            
+            if len(job_title) <= 0:
+                flash('Job Title Cannot be Empty', 'danger')
+                return redirect(url_for('postjob'))
+            if len(job_location_id) <= 0:
+                flash('Job Location Cannot be Empty', 'danger')
+                return redirect(url_for('postjob'))
+            if len(jobtype_id) <= 0:
+                flash('Job Type Cannot be Empty', 'danger')
+                return redirect(url_for('postjob'))
+            if len(salary_range_id) <= 0:
+                flash('Salary Range Cannot be Empty', 'danger')
+                return redirect(url_for('postjob'))
+            if len(job_skills) <= 0:
+                flash('Job Skills Cannot be Empty', 'danger')
+                return redirect(url_for('postjob'))
+            if len(job_description) <= 0:
+                flash('Job Description Cannot be Empty', 'danger')
+                return redirect(url_for('postjob'))
+            else:
+                job_data = (job_title, job_location_id, jobtype_id, salary_range_id, job_description, company_id)
+                job_sql = 'INSERT INTO postedjobs (job_title, job_location_id, jobtype_id, salary_range_id, job_description, company_id) VALUES (%s, %s, %s, %s, %s, %s)'
+                cursor.execute(job_sql, job_data)
+                connection.commit()
+
+                # Get the last inserted job id
+                posted_job_id = cursor.lastrowid
+
+                skill_sql = 'INSERT INTO  postedjobs_skills (posted_job_id, skill_id) VALUES (%s, %s)'
+                for skill_id in job_skills:
+                    cursor.execute(skill_sql, (posted_job_id, skill_id))
+                connection.commit()
+                flash("Job Posted Successfully", 'success')
+                return redirect(url_for('postjob'))
         else:
-            job_data = (job_title, job_location_id, jobtype_id, salary_range_id, job_description, company_id)
-            job_sql = 'INSERT INTO postedjobs (job_title, job_location_id, jobtype_id, salary_range_id, job_description, company_id) VALUES (%s, %s, %s, %s, %s, %s)'
-            cursor.execute(job_sql, job_data)
-            connection.commit()
-
-            # Get the last inserted job id
-            posted_job_id = cursor.lastrowid
-
-            skill_sql = 'INSERT INTO  postedjobs_skills (posted_job_id, skill_id) VALUES (%s, %s)'
-            for skill_id in job_skills:
-                cursor.execute(skill_sql, (posted_job_id, skill_id))
-            connection.commit()
-            flash("Job Posted Successfully", 'success')
-            return redirect(url_for('postjob'))
+            locations = get_job_locations()
+            jobType = get_jobType()
+            salaryRange = get_salaryRange()
+            skills = get_skills()
+            return render_template('company/post-jobs.html', locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)
     else:
+        return render_template("403.html")
+
+#make search for user posted jobs
+@app.route('/company/search', methods=['POST','GET'])
+@login_required
+def company_search():
+    if session['key'] == "company" :
         locations = get_job_locations()
         jobType = get_jobType()
         salaryRange = get_salaryRange()
         skills = get_skills()
-        return render_template('company/post-jobs.html', locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)
+        job_title = request.form.get('job_title')
+        page = int(request.form.get('currentPage', 1))
+        company_posted_jobs = get_company_posted_jobs(session['id'],job_title=job_title)
+        per_page = 5
+        pages = math.ceil(len(company_posted_jobs) / per_page)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_data = company_posted_jobs[start:end]
+        print("company posted jobs are", paginated_data)
+        return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages, locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)})
 
-#make search for user posted jobs
-@app.route('/company/search', methods=['POST','GET'])
-def company_search():
-    locations = get_job_locations()
-    jobType = get_jobType()
-    salaryRange = get_salaryRange()
-    skills = get_skills()
-    job_title = request.form.get('job_title')
-    page = int(request.form.get('currentPage', 1))
-    company_posted_jobs = get_company_posted_jobs(session['id'],job_title=job_title)
-    per_page = 5
-    pages = math.ceil(len(company_posted_jobs) / per_page)
-    start = (page - 1) * per_page
-    end = start + per_page
-    paginated_data = company_posted_jobs[start:end]
-    print("company posted jobs are", paginated_data)
-    return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages, locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)})
-
+    else:
+        return render_template('403.html')
+    
 @app.route('/company/applications')
 @login_required
 def company_applications():
-    return render_template('/company/applications.html')
+    if session['key'] == "company" :
+        return render_template('/company/applications.html')
+    else:
+        return render_template('403.html')
 
 
 @app.route('/company/logout')
@@ -532,8 +556,9 @@ def about():
 
 # update bio
 @app.route('/candidate/update-bio',  methods = ['POST', 'GET'])
+@login_required
 def update_bio():
-    if 'key' in session:
+    if session['key'] == "candidate" :
         if request.method == 'POST':
             firstname = request.form['fname']
             lastname = request.form['lname']
@@ -549,13 +574,11 @@ def update_bio():
             connection = pymysql.connect(host='localhost', user='root',password='', database='hustle_db' )
             cursor = connection.cursor()
 
-            data = (firstname, lastname, surname, phone, title, gender, dob, national_id_no, address, bio, session['key'])
+            data = (firstname, lastname, surname, phone, title, gender, dob, national_id_no, address, bio,session['candidate_key'])
 
             sql = "update candidates set fname = %s, lname = %s, surname = %s, phone = %s, professional_title = %s, gender = %s, dob = %s, national_id_no = %s, address = %s, bio = %s where id = %s"
             cursor.execute(sql, data)
-            connection.commit()
-
-            
+            connection.commit()           
             
 
             return render_template('candidate/components/profile.html', success = 'Bio Updated Successfully')
@@ -564,12 +587,13 @@ def update_bio():
             return render_template('candidate/components/profile.html')
             
     else:
-        return redirect('/candidate/login')
+        return render_template('403.html')
     
 
 @app.route('/candidate/upload-photo', methods=['GET', 'POST'])
+@login_required
 def upload_photo():
-    if 'key' in session:
+    if session['key'] == "candidate" :
         if request.method == 'POST':
             if 'profile_pic' not in request.files:
                 flash('No file part')
@@ -586,21 +610,20 @@ def upload_photo():
                 connection = pymysql.connect(host='localhost', user='root', password='', database='hustle_db')
                 cursor = connection.cursor()
                 sql = "UPDATE candidates SET profile_pic = %s WHERE id = %s"
-                cursor.execute(sql, (filename, session['key']))
+                cursor.execute(sql, (filename,session['candidate_key']))
                 connection.commit()
 
                 flash('Profile picture updated successfully!')
                 return redirect(url_for('candidate_profile'))
         return render_template('candidate/profile-pic-upload.html')
     else:
-        return redirect('/candidate/login')
+        return render_template('403.html')
   
 
-
 @app.route('/candidate/update-certifications', methods=['GET', 'POST'])
-#
+@login_required
 def update_work_experience():
-    if 'key' in session:
+    if session['key'] == "candidate" :
         
         if request.method == 'POST':
             
@@ -611,109 +634,99 @@ def update_work_experience():
             connection = pymysql.connect(host='localhost', user='root',password='', database='hustle_db' )
             cursor = connection.cursor()
 
-            data = ( session['key'], certification_name, date_awarded, description, session['key'])
+            data = (session['candidate_key'], certification_name, date_awarded, description,session['candidate_key'])
 
             sql = "update certifications set candidate_id = %s, certification_name = %s, date_awarded = %s, description = %s  where candidate_id = %s"
             cursor.execute(sql, data)
             connection.commit()
 
-            
-            
-
             return render_template('candidate/components/profile.html', success = 'certifications Updated Successfully')
 
         else:
             return render_template('candidate/components/profile.html')
-          
-        
     
-    return redirect('/candidate/login')
-
+    else:
+        return render_template('403.html')
 
 @app.route('/candidate/update-work-experience', methods=['GET', 'POST'])
+@login_required
 def update_certifications():
-    if 'key' in session:
-        
-        if request.method == 'POST':
-            
+    if session['key'] == "candidate" :        
+        if request.method == 'POST':            
             company_name = request.form['company_name']
             job_title = request.form['job_title']
             from_date = request.form['from_date']
             to_date = request.form['to_date']
             description = request.form['description']
-
             connection = pymysql.connect(host='localhost', user='root',password='', database='hustle_db' )
             cursor = connection.cursor()
-
-            data = ( session['key'], company_name, job_title, from_date, to_date, description, session['key'])
+            data = (session['candidate_key'], company_name, job_title, from_date, to_date, description,session['candidate_key'])
 
             sql = "update workexperiences set candidate_id = %s, company_name = %s, job_title = %s, from_date = %s, to_date = %s, description = %s  where candidate_id = %s"
             cursor.execute(sql, data)
             connection.commit()
 
-            
-            
-
             return render_template('candidate/components/profile.html', success = 'workexperiences Updated Successfully')
 
         else:
             return render_template('candidate/components/profile.html')
-          
-        
-    
-    return redirect('/candidate/login')
+    else:
+        return render_template('403.html') 
 
 @app.route('/candidate/update-skills-attributes', methods=['POST', 'GET'])
 @login_required
 def updateCandidateSkills():
-    skills = get_skills()
-    languages = get_languages()
-    softskills = get_soft_skills()
-    
-    connection = pymysql.connect(**db_config)
-    cursor = connection.cursor()
-    if request.method == 'POST':
-        technical_skills = request.form.getlist('technical_skills[]')
-        soft_skills = request.form.getlist('soft_skills[]')
-        languages = request.form.getlist('languages[]')
+    if session['key'] == "candidate" :
+        skills = get_skills()
+        languages = get_languages()
+        softskills = get_soft_skills()
+        
+        connection = pymysql.connect(**db_config)
+        cursor = connection.cursor()
+        if request.method == 'POST':
+            technical_skills = request.form.getlist('technical_skills[]')
+            soft_skills = request.form.getlist('soft_skills[]')
+            languages = request.form.getlist('languages[]')
 
-        if len(technical_skills) <= 0:
-            return render_template('candidate/components/profile.html', error='Technical skills cannot be empty')
-        if len(soft_skills) <= 0:
-            return render_template('candidate/components/profile.html', error='Soft skills cannot be empty')
-        if len(languages) <= 0:
-            return render_template('candidate/components/profile.html', error='Languages cannot be empty')
+            if len(technical_skills) <= 0:
+                return render_template('candidate/components/profile.html', error='Technical skills cannot be empty')
+            if len(soft_skills) <= 0:
+                return render_template('candidate/components/profile.html', error='Soft skills cannot be empty')
+            if len(languages) <= 0:
+                return render_template('candidate/components/profile.html', error='Languages cannot be empty')
 
-        # Assuming candidate ID is stored in session
-        candidate_id = session.get('key')
-        if not candidate_id:
-            return render_template('candidate/components/profile.html', error='Candidate ID not found in session')
+            # Assuming candidate ID is stored in session
+            candidate_id = session.get('key')
+            if not candidate_id:
+                return render_template('candidate/components/profile.html', error='Candidate ID not found in session')
 
-        technical_sql = 'INSERT INTO candidates_technicalskills (candidate_id, skill_id) VALUES (%s, %s)'
-        softskills_sql = 'INSERT INTO candidates_softskills (candidate_id, softskill_id) VALUES (%s, %s)'
-        languages_sql = 'INSERT INTO candidates_languages (candidate_id, language_id) VALUES (%s, %s)'
+            technical_sql = 'INSERT INTO candidates_technicalskills (candidate_id, skill_id) VALUES (%s, %s)'
+            softskills_sql = 'INSERT INTO candidates_softskills (candidate_id, softskill_id) VALUES (%s, %s)'
+            languages_sql = 'INSERT INTO candidates_languages (candidate_id, language_id) VALUES (%s, %s)'
 
-        try:
-            for skill_id in technical_skills:
-                cursor.execute(technical_sql, (candidate_id, skill_id))
+            try:
+                for skill_id in technical_skills:
+                    cursor.execute(technical_sql, (candidate_id, skill_id))
+                
+                for soft_skill_id in soft_skills:
+                    cursor.execute(softskills_sql, (candidate_id, soft_skill_id))
+
+                for language_id in languages:
+                    cursor.execute(languages_sql, (candidate_id, language_id))
+                
+                connection.commit()
+                return render_template('candidate/components/profile.html', skills = skills, softskills = softskills , languages = languages, success='Skills updated successfully')
+
             
-            for soft_skill_id in soft_skills:
-                cursor.execute(softskills_sql, (candidate_id, soft_skill_id))
-
-            for language_id in languages:
-                cursor.execute(languages_sql, (candidate_id, language_id))
-            
-            connection.commit()
-            return render_template('candidate/components/profile.html', skills = skills, softskills = softskills , languages = languages, success='Skills updated successfully')
-
-           
-        except Exception as e:
-            connection.rollback()
-            
-            return render_template('candidate/components/profile.html', skills = skills, softskills = softskills , languages = languages, error=str(e))
-            
+            except Exception as e:
+                connection.rollback()
+                
+                return render_template('candidate/components/profile.html', skills = skills, softskills = softskills , languages = languages, error=str(e))
+                
+        else:
+            return render_template('candidate/components/profile.html')
     else:
-        return render_template('candidate/components/profile.html')
+        return render_template('403.html')
 
 if __name__ == '__main__':
     app.debug = True
