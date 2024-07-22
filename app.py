@@ -400,7 +400,6 @@ def company_dashboard():
         cursor.execute(sql, (company_id,))
         applications = cursor.fetchall()
         applications=len(applications)
-
         return render_template('company/dashboard.html',jobcounts=jobcount,job_applicants=applications)
    else:
        return render_template('403.html')
@@ -537,20 +536,56 @@ def postjob():
 @app.route('/company/search', methods=['POST','GET'])
 @login_required
 def company_search():
-    locations = get_job_locations()
-    jobType = get_jobType()
-    salaryRange = get_salaryRange()
-    skills = get_skills()
-    job_title = request.form.get('job_title')
-    page = int(request.form.get('currentPage', 1))
-    company_posted_jobs = get_company_posted_jobs(session['id'],job_title=job_title)
-    per_page = 5
-    pages = math.ceil(len(company_posted_jobs) / per_page)
-    start = (page - 1) * per_page
-    end = start + per_page
-    paginated_data = company_posted_jobs[start:end]
-    print("company posted jobs are", paginated_data)
-    return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages, locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)})
+    if session['key'] == "company" :      
+        locations = get_job_locations()
+        jobType = get_jobType()
+        salaryRange = get_salaryRange()
+        skills = get_skills()
+        job_title = request.form.get('job_title')
+        page = int(request.form.get('currentPage', 1))
+        company_posted_jobs = get_company_posted_jobs(session['id'],job_title=job_title)
+        per_page = 5
+        pages = math.ceil(len(company_posted_jobs) / per_page)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_data = company_posted_jobs[start:end]
+        print("company posted jobs are", paginated_data)
+        return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages, locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)})
+    else:
+        return render_template('403.html')
+#getting applications
+@app.route('/company/search/applications', methods=['POST','GET'])
+@login_required
+def company_search_applications():
+    if session['key'] == "company" :      
+        locations = get_job_locations()
+        jobType = get_jobType()
+        salaryRange = get_salaryRange()
+        skills = get_skills()
+        job_title = request.form.get('job_title')
+        page = int(request.form.get('currentPage', 1))
+        company_posted_jobs = get_company_posted_jobs(session['id'],job_title=job_title)
+        per_page = 5
+        pages = math.ceil(len(company_posted_jobs) / per_page)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_data = company_posted_jobs[start:end]
+        print("company posted jobs are", paginated_data)
+        return jsonify({'htmlresponse': render_template('company/components/applications.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages, locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)})
+    else:
+            return render_template('403.html')
+
+#geting job applicants
+@app.route('/jobs/applicants/<int:job_id>')
+@login_required
+def job_applicants(job_id):
+    if session['key'] == "company" : 
+        applicants= get_applicants(job_id)
+        print("my applicants are",applicants)
+        return render_template("/company/pages/applicants.html",applicants=applicants)
+    else:
+            return render_template('403.html')
+
 
 #fetching data for editing jobs 
 @app.route('/company/editjob/<int:job_id>', methods=['GET'])
