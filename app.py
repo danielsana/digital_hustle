@@ -476,6 +476,7 @@ def company_profile():
 @app.route('/company/postjob', methods=['POST', 'GET'])
 @login_required
 def postjob():
+    
     if session['key'] == "company" :        
         connection = pymysql.connect(**db_config)
         cursor = connection.cursor()
@@ -514,6 +515,8 @@ def postjob():
 
                 # Get the last inserted job id
                 posted_job_id = cursor.lastrowid
+                # Get the last inserted job id
+                posted_job_id = cursor.lastrowid
 
                 skill_sql = 'INSERT INTO  postedjobs_skills (posted_job_id, skill_id) VALUES (%s, %s)'
                 for skill_id in job_skills:
@@ -528,30 +531,95 @@ def postjob():
             skills = get_skills()
             return render_template('company/post-jobs.html', locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)
     else:
-        return render_template("403.html")
+        return render_template('403.html')
 
 #make search for user posted jobs
 @app.route('/company/search', methods=['POST','GET'])
 @login_required
 def company_search():
-    if session['key'] == "company" :
-        locations = get_job_locations()
-        jobType = get_jobType()
-        salaryRange = get_salaryRange()
-        skills = get_skills()
-        job_title = request.form.get('job_title')
-        page = int(request.form.get('currentPage', 1))
-        company_posted_jobs = get_company_posted_jobs(session['id'],job_title=job_title)
-        per_page = 5
-        pages = math.ceil(len(company_posted_jobs) / per_page)
-        start = (page - 1) * per_page
-        end = start + per_page
-        paginated_data = company_posted_jobs[start:end]
-        return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages, locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)})
+    locations = get_job_locations()
+    jobType = get_jobType()
+    salaryRange = get_salaryRange()
+    skills = get_skills()
+    job_title = request.form.get('job_title')
+    page = int(request.form.get('currentPage', 1))
+    company_posted_jobs = get_company_posted_jobs(session['id'],job_title=job_title)
+    per_page = 5
+    pages = math.ceil(len(company_posted_jobs) / per_page)
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_data = company_posted_jobs[start:end]
+    print("company posted jobs are", paginated_data)
+    return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages, locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)})
 
-    else:
-        return render_template('403.html')
+#fetching data for editing jobs 
+@app.route('/company/editjob/<int:job_id>', methods=['GET'])
+@login_required
+def edit_job(job_id):
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor()
     
+    job_sql = '''
+    SELECT id, job_title, job_location_id, jobtype_id, salary_range_id, job_description, updated_at, 
+           (SELECT location_name FROM locations WHERE id = postedjobs.job_location_id) as job_location_name, 
+           (SELECT jobtype_name FROM jobtypes WHERE id = postedjobs.jobtype_id) as jobtype_name, 
+           (SELECT salary_range FROM salaryranges WHERE id = postedjobs.salary_range_id) as salary_range
+    FROM postedjobs 
+    WHERE id = %s
+    '''
+    cursor.execute(job_sql, (job_id,))
+    job_data = cursor.fetchone()
+
+    skill_sql = 'SELECT skill_name FROM skills JOIN postedjobs_skills ON skills.id = postedjobs_skills.skill_id WHERE postedjobs_skills.posted_job_id = %s'
+    cursor.execute(skill_sql, (job_id,))
+    job_skills = [skill[0] for skill in cursor.fetchall()]
+    
+    # Convert job_data to a dictionary
+    job_dict = {
+        'job_id': job_data[0],
+        'job_title': job_data[1],
+        'job_location_id': job_data[2],
+        'jobtype_id': job_data[3],
+        'salary_range_id': job_data[4],
+        'job_description': job_data[5],
+        'job_location_name': job_data[7],
+        'jobtype_name': job_data[8],
+        'salary_range_name': job_data[9],
+        'date':job_data[6],
+        'job_skills': job_skills
+    }
+
+    return jsonify(job_dict)
+
+#deleting jobs 
+@app.route('/company/deletejob/', methods=['POST'])
+@login_required
+def deletejob():
+    job_id=request.form.get('job_id')
+    if request.method == "POST":
+        connection = pymysql.connect(**db_config)
+        cursor = connection.cursor()
+        try:
+            delete_job_query ='''DELETE FROM `postedjobs` WHERE id = %s'''
+            cursor.execute(delete_job_query, (job_id,))
+            delete_skill_query = '''DELETE FROM postedjobs_skills WHERE posted_job_id=%s'''
+            cursor.execute(delete_skill_query, (job_id,))
+            connection.commit()
+            flash("Job Deleted Successfully", 'success')
+            # return redirect(url_for('postjob'))
+        except Exception as e:
+            connection.rollback()
+            flash("Job Not Deleted Successfully: " + str(e), 'danger')
+
+        finally:
+                cursor.close()
+                connection.close()
+    else:
+        flash("Job ID is missing", 'danger')
+
+    return redirect(url_for('postjob'))
+
+
 @app.route('/company/applications')
 @login_required
 def company_applications():
