@@ -121,7 +121,7 @@ def get_featured_jobs(job_title=None, location=None, job_type=None, salary_range
         query += " and postedjobs.job_title = %s"
         params.append(tag)
 
-    query += " GROUP BY postedjobs.id"
+    query += " GROUP BY postedjobs.id ORDER BY postedjobs.updated_at DESC"
 
     cursor.execute(query, params)
     featured_jobs = cursor.fetchall()
@@ -300,7 +300,7 @@ def get_company_posted_jobs(company_id, job_title=None, location=None, job_type=
     cursor = connection.cursor()
 
     query = """
-    SELECT companies.company_name, companies.id, companies.company_logo, postedjobs.job_title,
+    SELECT companies.company_name, companies.id, companies.company_logo, postedjobs.job_title, postedjobs.id,
       CASE 
         WHEN TIMESTAMPDIFF(MINUTE, postedjobs.updated_at, NOW()) < 60 THEN CONCAT(TIMESTAMPDIFF(MINUTE, postedjobs.updated_at, NOW()), ' Min Ago')
         WHEN TIMESTAMPDIFF(HOUR, postedjobs.updated_at, NOW()) < 24 THEN CONCAT(TIMESTAMPDIFF(HOUR, postedjobs.updated_at, NOW()), ' Hrs Ago')
@@ -336,7 +336,7 @@ def get_company_posted_jobs(company_id, job_title=None, location=None, job_type=
         query += " AND postedjobs.job_title = %s"
         params.append(tag)
 
-    query += " GROUP BY postedjobs.id"
+    query += "GROUP BY postedjobs.id ORDER BY postedjobs.updated_at DESC "
 
     cursor.execute(query, params)
     posted_jobs = cursor.fetchall()
