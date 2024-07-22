@@ -1,27 +1,59 @@
- <div class="page-row">
+<style>
+  .title-color{
+        color: #065271;       
+    }
+  .btn-profile{
+    background: #065271;
+    color: aliceblue;
+    border-radius: 15px;
+    padding: 10px;
+    text-decoration: none;
+  }
+  .btn-profile:hover{
+    background-color: #626569;
+    color: aliceblue;
+  }
+  .profile-container1{
+    border-top-left-radius: 15px;
+    border-top-right-radius:15px ;
+    color: #065271;
+    background-color: #05516e3e;
+  }
+  .profile-container2{
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius:15px ;
+    color: #065271;
+    background-color: #05506e10;
+  }
+</style>
+<div class="ms-3">
+  
+<div class="page-row">
   <div class="page-title">
-    <h3>Company Profile</h3>
+    <h3 class="title-color">Company Profile</h3>    
   </div>
 </div>
+
+<small class="col-md-12">
+  {% with messages = get_flashed_messages(with_categories=true) %} 
+    {% if messages %} 
+      {% for category, message in messages %}
+      <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }}" role="alert">
+          {{ message }}
+      </div>
+      {% endfor %} 
+    {% endif %} 
+  {% endwith %}
+</small>
 <div class="page-content">
   <div class="page-row">
     <div class="page-col">
-      <div class="page-content-title">
-        <small class="form-error">
-          {% with messages = get_flashed_messages(with_categories=true) %} {% if
-          messages %} {% for category, message in messages %}
-          <div
-            class="alert alert-{{ 'success' if category == 'success' else 'danger' }}"
-            role="alert"
-          >
-            {{ message }}
-          </div>
-          {% endfor %} {% endif %} {% endwith %}
-        </small>
+      <div class="page-content-title pb-2" >
+        
         <p>Manage your profile below</p>
         <a
           href=""
-          class="btn btn-outline-primary"
+          class=" btn-profile"
           data-bs-toggle="modal"
           data-bs-target="#updateProfile"
           >Update Profile</a
@@ -30,7 +62,7 @@
     </div>
   </div>
 </div>
-<div class="profile-bio-container">
+<div class="profile-bio-container profile-container1">
     <div class="profile-bio-wrapper">
         <div class="profile-image-box">
             <div class="profile-image">
@@ -51,7 +83,7 @@
     </div>
     
 </div>
-<div class="profile-bio-container">
+<div class="profile-bio-container profile-container2">
     <div class="profile-bio-wrapper">
         <div class="profile-keys-values">
             <div class="profile-keys">
@@ -331,4 +363,6 @@
       </div>
     </div>
   </div>
+</div>
+
 </div>
