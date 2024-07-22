@@ -2,7 +2,7 @@
   <div class="profile-bio-wrapper card p-3">
     <div class="row text-center">
       <div class="card-title">
-        <h4>Applications</h4>
+        <h4 style="color: #2b4b83; ">Applications</h4>
       </div>
 
       <div class="col-md-3 mx-3">
@@ -17,11 +17,19 @@
           </div>
         </form>
       </div>
-
-      <div
-        id="posted_jobs"
-        class="table-responsive col-md-12 col-lg-12 col-sm-12"
-      ></div>
+      {{ job_application }}
+      <div id="posted_jobs" class="table-responsive col-md-12 col-lg-12 col-sm-12">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="spinner-grow text-danger " role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        
+      </div>
     </div>
   </div>
 </div>

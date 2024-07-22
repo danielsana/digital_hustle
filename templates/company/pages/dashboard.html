@@ -1,8 +1,26 @@
+<style>
+    .dash1-bg{
+        background-color: #1a6874;  
+        margin-bottom: 15px;  
+    }
+    .dash2-bg{
+        background-color: #4f727f;       
+        margin-bottom: 15px;     
+    }
+    .dash3-bg{
+        background-color: #065271;        
+        margin-bottom: 15px;    
+    }
+    .dash4-bg{
+        background-color: #214a89;        
+        margin-bottom: 15px;    
+    }
+</style>
 <div class="dashboard-row">
     <div class="page-title">
         <h3>Dashboard</h3>
     </div>
-</div>
+<!-- </div>
 <div class="dashboard-box-row">
     <div class="dashboard-col">
         <div class="dashboard-card">
@@ -10,28 +28,96 @@
                 <p>Applicants</p>
             </div>
             <div class="dashboard-card-body">
-                <h3>23</h3>
+                <h3>{{ jobcounts }}</h3>
             </div>
         </div>
     </div>
     <div class="dashboard-col">
-        <div class="dashboard-card">
+        <div class="dashboard-card bg-primary p-2">
             <div class="dashboard-card-title">
-                <p>Job Listings</p>
+                <p class="text-primary">Job Listings</p>
             </div>
             <div class="dashboard-card-body">
-                <h3>23</h3>
+                <h3>{{ jobcounts }}</h3>
             </div>
         </div>
     </div>
-<div class="dashboard-col">
-        <div class="dashboard-card">
-            <div class="dashboard-card-title">
-                <p>Views</p>
-            </div>
-            <div class="dashboard-card-body">
-                <h3>13</h3>
+    <div class="dashboard-col">
+            <div class="dashboard-card">
+                <div class="dashboard-card-title">
+                    <p>Views</p>
+                </div>
+                <div class="dashboard-card-body">
+                    <h3>13</h3>
+                </div>
             </div>
         </div>
+</div> -->
+
+    <div class="row container-fluid">
+        <div class="col-md-3">
+            <div class="card shadow dash1-bg p-2">
+                <div class="card-title text-light">
+                    <p><li class="las la-briefcase "></li> Job Listing</p>
+                </div>
+                <div class="card-body text-light row">
+                    <div class="col-md-7">
+                        <h3></li>{{ jobcounts}}</h3> 
+                    </div>
+                    <div class="col-md-5 ">
+                        <a href="{{ url_for('postjob') }}" class="btn text-light">View</li></a>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow dash2-bg p-2">
+                <div class="card-title text-light">
+                    <p><li class="las la-briefcase "></li> Applicants</p>
+                </div>
+                <div class="card-body text-light row">
+                    <div class="col-md-7">
+                        <h3></li>{{ job_applicants }}</h3> 
+                    </div>
+                    <div class="col-md-5 ">
+                        <a href="{{ url_for('company_applications') }}" class="btn text-light">View</li></a>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow dash3-bg p-2">
+                <div class="card-title text-light">
+                    <p><li class="las la-briefcase "></li> Views</p>
+                </div>
+                <div class="card-body text-light row">
+                    <div class="col-md-7">
+                        <h3></li>{{ jobcounts}}</h3> 
+                    </div>
+                    <div class="col-md-5 ">
+                        <a href="{{ url_for('postjob') }}" class="btn text-light">View</li></a>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow dash4-bg p-2">
+                <div class="card-title text-light">
+                    <p><li class="las la-briefcase "></li> Job Listing</p>
+                </div>
+                <div class="card-body text-light row">
+                    <div class="col-md-7">
+                        <h3></li>{{ jobcounts}}</h3> 
+                    </div>
+                    <div class="col-md-5 ">
+                        <a href="{{ url_for('postjob') }}" class="btn text-light">View</li></a>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+        
+
     </div>
-</div>
