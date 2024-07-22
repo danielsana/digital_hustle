@@ -343,3 +343,19 @@ def get_company_posted_jobs(company_id, job_title=None, location=None, job_type=
     cursor.close()
     connection.close()
     return posted_jobs
+
+# get jpob applicants functions
+def get_applicants(job_id):
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor()
+
+    query= """SELECT * FROM `postedjobs_candidates` pjc
+        LEFT JOIN candidates c ON c.id = pjc.candidate_id
+     WHERE `postedjob_id` = %s"""
+    try:
+        cursor.execute(query,(job_id))
+        applicants = cursor.fetchall()
+        connection.commit()
+    except:
+        connection.rollback()
+    return applicants

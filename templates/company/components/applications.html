@@ -1,12 +1,11 @@
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<div class="card-body">
+<div class="card-body text-center">
   <table class="table table-hover table-striped align-middle mb-0 bg-white">
     <thead class="bg-light">
       <tr style="color: #2b4b83; font-size: 17px">
         <th>Job Title</th>
-        <th>Job Description</th>
+        <th>Applications</th>
         <th>&nbsp;&nbsp; Posted&nbsp;&nbsp;</th>
-        <th>Act</th>
+        <th>Actions</th>
       </tr>
     </thead>
     {% if postedJobs %} {% for postedJob in postedJobs %}
@@ -28,47 +27,24 @@
         </td>
 
         <td>
-          <p class="fw-normal mb-1">{{postedJob[6]}}</p>
-          <p class="text-muted mb-0"><span>Skills:</span> {{postedJob[8]}}</p>
+          <span class="badge-success rounded-pill d-inline"
+            >{{postedJob[5]}}</span
+          >
         </td>
-        
         <td>
           <span class="badge-success rounded-pill d-inline"
-            >{{postedJob[5]}} </span>
+            >{{postedJob[5]}}</span
+          >
         </td>
         <td>
-          <div class="d-flex align-items-end">
-            <button
-              type="button"
-              id="edit_post"
-              class="btn btn-link btn-sm btn-rounded edit-job-btn"
-              title="Edit"
-              data-toggle="modal"
-              data-target="#editModal"
-              data-job-id="{{postedJob[4]}}"
-            >
-              <i class="fas fa-edit"></i>
-            </button>
-            <button
-              type="button"
+          <div class="d-flex align-items-center">
+            <a
               class="btn btn-link btn-sm btn-rounded details-job-btn"
-              title="Details"
-              data-toggle="modal"
-              data-target="#detailsModal"
-              data-job-id="{{postedJob[4]}}"
+              title="View Applicants"
+              href="/jobs/applicants/{{postedJob[4]}}"
             >
               <i class="fas fa-eye"></i>
-            </button>
-            <button
-              type="button"
-              class="btn btn-link btn-sm btn-rounded delete-job-btn"
-              title="Delete"
-              data-toggle="modal"
-              data-target="#deleteModal"
-              data-job-id="{{postedJob[4]}}"
-            >
-              <i class="fas fa-trash"></i>
-            </button>
+            </a>
           </div>
         </td>
       </tr>
@@ -110,298 +86,4 @@
       </button>
     </p>
   </div>
-  <!-- </div>
-          <script>
-            $(document).ready(function() {
-                $('#edit_post').click(function() {
-                    $('html, body').animate({
-                        scrollTop: $('.profile-bio-container').offset().top
-                    }, 200); 
-                });
-            });
-            </script> -->
-
-  <!--Edit Modal -->
-  <div
-    class="modal fade"
-    id="editModal"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="editModalTitle"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Edit Job</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <div class="post-jobs-form">
-            <small class="form-error">
-              {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %} {% for category, message in messages %}
-              <div
-                class="alert alert-{{ 'success' if category == 'success' else 'danger' }}"
-                role="alert"
-              >
-                {{ message }}
-              </div>
-              {% endfor %} {% endif %} {% endwith %}
-            </small>
-            <form action="{{ url_for('postjob') }}" method="POST">
-              <input type="hidden" name="job_id" value="" />
-              <div class="post-jobs-form-row">
-                <div class="post-jobs-form-group">
-                  <label class="post-jobs-label" for="">Job Title</label>
-                  <input
-                    class="post-jobs-input"
-                    type="text"
-                    value="hi"
-                    name="job_title"
-                  />
-                </div>
-                <div class="post-jobs-form-group">
-                  <label class="post-jobs-label" for="">Location</label>
-                  <select class="post-jobs-select" name="job_location_id" id="">
-                    <option value="">--Choose Job Location--</option>
-                    {% for location in locations %}
-                    <option value="{{ location[0] }}">{{ location[1] }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="post-jobs-form-group">
-                  <label class="post-jobs-label" for="">Job Type</label>
-                  <select class="post-jobs-select" name="jobtype_id" id="">
-                    <option>--Choose Job Type--</option>
-                    {% for jobtype in jobType %}
-                    <option value="{{ jobtype[0] }}">{{ jobtype[1] }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="post-jobs-form-group">
-                  <label class="post-jobs-label" for="">Salary Range</label>
-                  <select class="post-jobs-select" name="salary_range_id" id="">
-                    <option value="">--Choose Salary Range--</option>
-                    {% for salary in salaryRange %}
-                    <option value="{{ salary[0] }}">{{ salary[1] }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-              </div>
-              <div class="post-jobs-form-row">
-                <div class="post-jobs-form-group">
-                  <label class="post-jobs-label" for="skills"
-                    >Choose Skills</label
-                  >
-                  <select
-                    class="post-jobs-skills"
-                    name="job_skills[]"
-                    id="skills"
-                    multiple
-                  >
-                    {% for skill in skills %}
-                    <option value="{{ skill[0] }}">{{ skill[1] }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-              </div>
-              <div class="post-jobs-form-row">
-                <div class="post-jobs-form-group">
-                  <label class="post-jobs-label" for="">Job Description</label>
-                  <textarea
-                    class="post-jobs-textarea"
-                    name="job_description"
-                  ></textarea>
-                </div>
-              </div>
-              <div class="post-jobs-form-row">
-                <div class="post-jobs-form-group">
-                  <div class="post-jobs-add-btn">
-                    <button class="btn btn-outline-primary mt-2" type="submit">
-                      Update Job
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Details Modal -->
-  <div
-    class="modal fade"
-    id="detailsModal"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="detailsModalTitle"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-      <div class="modal-content">
-        <div class="modal-body">
-          <div class="profile">
-            <div class="avatar">
-              <!-- <img
-           src="../../../static/img/hero_right_02.jpg"
-           alt="Circle Image"
-           class="img-raised rounded-circle img-fluid"
-         /> -->
-            </div>
-            <div class="name">
-              <h3 class="title fw-bold" id="jobTitle" style="color: #2b4b83">
-                Job Title
-              </h3>
-              <h6 id="jobType" class="text-muted"></h6>
-              <h6 id="jobSkills" class="text-muted"></h6>
-              <h6 id="jobLocation" class="text-muted"></h6>
-              <h6 id="jobSalary" class="text-muted"></h6>
-              <h6 id="jobDate" class="text-muted"></h6>
-            </div>
-          </div>
-
-          <div class="description text-center">
-            <h5 class="fw-bold pt-2">Job Summary</h5>
-            <p id="jobDescription" class="text-muted"></p>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-outline-primary"
-            data-dismiss="modal"
-            aria-label="Close"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Delete Modal -->
-  <div
-    class="modal fade"
-    id="deleteModal"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="deleteModalTitle"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content pt-4 pb-4">
-        <div class="modal-body">
-          <p id="jobtitle" class="fw-bold"></p>
-          <form id="deleteForm" action="/company/deletejob/" method="post">
-            <input type="hidden" name="job_id" id="deleteJobId" value="" />
-            <button
-              type="button"
-              class="btn btn-primary btn-sm"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              Close
-            </button>
-            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    $(document).ready(function () {
-      // editting jobs js
-      $(".edit-job-btn").on("click", function () {
-        var jobId = $(this).data("job-id");
-        $.ajax({
-          url: "/company/editjob/" + jobId,
-          method: "GET",
-          success: function (data) {
-            $('#editModal input[name="job_id"]').val(data.job_id);
-            $('#editModal input[name="job_title"]').val(data.job_title);
-            $('#editModal select[name="job_location_id"]').val(
-              data.job_location_id
-            );
-            $('#editModal select[name="jobtype_id"]').val(data.jobtype_id);
-            $('#editModal select[name="salary_range_id"]').val(
-              data.salary_range_id
-            );
-            $('#editModal textarea[name="job_description"]').val(
-              data.job_description
-            );
-
-            // Set selected skills
-            $('#editModal select[name="job_skills[]"] option').each(
-              function () {
-                if (data.job_skills.includes($(this).val())) {
-                  $(this).prop("selected", true);
-                } else {
-                  $(this).prop("selected", false);
-                }
-              }
-            );
-
-            $("#editModal").modal("show");
-          },
-        });
-      });
-      // details of jobs JS
-      $(".details-job-btn").on("click", function () {
-        var jobId = $(this).data("job-id");
-        $.ajax({
-          url: "/company/editjob/" + jobId,
-          method: "GET",
-          success: function (data) {
-            $("#jobTitle").text(data.job_title);
-            $("#jobType").html(
-              '<i class="fa-solid fa-briefcase" style="color: #2b4b83"></i> &nbsp; Job type: ' +
-                data.jobtype_name
-            );
-            $("#jobSkills").html(
-              '<i class="fa-solid fa-list-check" style="color: #2b4b83"></i> &nbsp; Skills: ' +
-                data.job_skills.join(", ")
-            );
-            $("#jobLocation").html(
-              '<i class="fa-solid fa-building" style="color: #2b4b83"></i> &nbsp; Location: ' +
-                data.job_location_name
-            );
-            $("#jobSalary").html(
-              '<i class="fa-solid fa-wallet" style="color: #2b4b83"></i> &nbsp; Salary: ' +
-                data.salary_range_name
-            );
-            $("#jobDate").html(
-              '<i class="fa-solid fa-calendar-days" style="color: #2b4b83"></i> &nbsp; Date: ' +
-                data.date
-            );
-            $("#jobDescription").text(data.job_description);
-            $("#detailsModal").modal("show");
-          },
-        });
-      });
-      // deleting job JS
-      $(".delete-job-btn").on("click", function () {
-        var jobId = $(this).data("job-id");
-        $.ajax({
-          url: "/company/editjob/" + jobId,
-          method: "GET",
-          success: function (data) {
-            $("#jobtitle").html(
-              "Are You Sure You Want To Delete " + data.job_title + "?"
-            );
-            $("#deleteJobId").val(jobId);
-            $("#deleteModal").modal("show");
-          },
-        });
-      });
-    });
-  </script>
 </div>
