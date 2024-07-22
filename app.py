@@ -476,56 +476,7 @@ def company_profile():
 @app.route('/company/postjob', methods=['POST', 'GET'])
 @login_required
 def postjob():
-    connection = pymysql.connect(**db_config)
-    cursor = connection.cursor()
-    if request.method == 'POST' :
-        job_id = request.form.get('job_id')
-        job_title = request.form.get('job_title')
-        job_location_id = request.form.get('job_location_id')
-        jobtype_id = request.form.get('jobtype_id')
-        salary_range_id = request.form.get('salary_range_id')
-        job_skills = request.form.getlist('job_skills[]')  
-        job_description = request.form.get('job_description')
-        company_id = session['id']
-        print("job_id is",job_id)
-        if len(job_title) <= 0:
-            flash('Job Title Cannot be Empty', 'danger')
-            return redirect(url_for('postjob'))
-        if len(job_location_id) <= 0:
-            flash('Job Location Cannot be Empty', 'danger')
-            return redirect(url_for('postjob'))
-        if len(jobtype_id) <= 0:
-            flash('Job Type Cannot be Empty', 'danger')
-            return redirect(url_for('postjob'))
-        if len(salary_range_id) <= 0:
-            flash('Salary Range Cannot be Empty', 'danger')
-            return redirect(url_for('postjob'))
-        if len(job_skills) <= 0:
-            flash('Job Skills Cannot be Empty', 'danger')
-            return redirect(url_for('postjob'))
-        if len(job_description) <= 0:
-            flash('Job Description Cannot be Empty', 'danger')
-            return redirect(url_for('postjob'))
-        else:
-            if job_id: #updating the jobs
-                job_data = (job_title, job_location_id, jobtype_id, salary_range_id, job_description, job_id)
-                job_sql = 'UPDATE postedjobs SET job_title=%s, job_location_id=%s, jobtype_id=%s, salary_range_id=%s, job_description=%s WHERE id=%s'
-                cursor.execute(job_sql, job_data)
-                
-                delete_skill_sql = 'DELETE FROM postedjobs_skills WHERE posted_job_id=%s'
-                cursor.execute(delete_skill_sql, (job_id,))
-                
-                skill_sql = 'INSERT INTO postedjobs_skills (posted_job_id, skill_id) VALUES (%s, %s)'
-                for skill_id in job_skills:
-                    cursor.execute(skill_sql, (job_id, skill_id))
-                connection.commit()
-                flash("Job Updated Successfully", 'success')
-                return redirect(url_for('postjob'))
-            else:
-                job_data = (job_title, job_location_id, jobtype_id, salary_range_id, job_description, company_id)
-                job_sql = 'INSERT INTO postedjobs (job_title, job_location_id, jobtype_id, salary_range_id, job_description, company_id) VALUES (%s, %s, %s, %s, %s, %s)'
-                cursor.execute(job_sql, job_data)
-                connection.commit()
+    
     if session['key'] == "company" :        
         connection = pymysql.connect(**db_config)
         cursor = connection.cursor()
@@ -573,12 +524,14 @@ def postjob():
                 connection.commit()
                 flash("Job Posted Successfully", 'success')
                 return redirect(url_for('postjob'))
+        else:
+            locations = get_job_locations()
+            jobType = get_jobType()
+            salaryRange = get_salaryRange()
+            skills = get_skills()
+            return render_template('company/post-jobs.html', locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)
     else:
-        locations = get_job_locations()
-        jobType = get_jobType()
-        salaryRange = get_salaryRange()
-        skills = get_skills()
-        return render_template('company/post-jobs.html', locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)
+        return render_template('403.html')
 
 #make search for user posted jobs
 @app.route('/company/search', methods=['POST','GET'])
