@@ -30,26 +30,36 @@ db_config = {
     'database': 'hustle_db'
 }
 
+# def login_required(f):
+#     @wraps(f)
+#     # return session
+#     def decorated_function(*args, **kwargs):
+#         # if 'candidate_key' not in session:
+#         #     flash('Kindly login to access this page.', 'danger')
+#         #     return redirect(url_for('choose'))
+#         # elif 'company_key' not in session:
+#         #     flash('Kindly login to access this page.', 'danger')
+#         #     return redirect(url_for('choose'))  
+#         # else:            
+#         #     return f(*args, **kwargs)
+#         # try:
+#             if not(session['key']):
+#                 flash("Login to access the dashboard")
+#                 return redirect(url_for('choose'))
+#             else:            
+#                 return f(*args, **kwargs)
+#         # except:
+#         #         flash("Login to access the dashboard")
+#         #         return redirect(url_for('choose'))
+#     return decorated_function
+
 def login_required(f):
     @wraps(f)
-    # return session
     def decorated_function(*args, **kwargs):
-        # if 'candidate_key' not in session:
-        #     flash('Kindly login to access this page.', 'danger')
-        #     return redirect(url_for('choose'))
-        # elif 'company_key' not in session:
-        #     flash('Kindly login to access this page.', 'danger')
-        #     return redirect(url_for('choose'))  
-        # else:            
-        #     return f(*args, **kwargs)
-        try:
-            if not(session['key']):
-                return redirect(url_for('choose'))
-            else:            
-                return f(*args, **kwargs)
-        except:
-                flash("Login to access the dashboard")
-                return redirect(url_for('choose'))
+        if 'key' not in session:
+            flash("Login to access the dashboard", 'danger')
+            return redirect(url_for('choose'))
+        return f(*args, **kwargs)
     return decorated_function
 
 
@@ -77,7 +87,6 @@ def search():
     salary_range = request.form.get('search_salary')
     page = int(request.form.get('currentPage', 1))
     tag = request.form.get('tag')
-    print(tag)
     if tag == "None" or tag == "":
         tag = None
     if location == "None" or location == "Select Location":
@@ -381,8 +390,18 @@ def company_dashboard():
         sql= 'select * from postedjobs where company_id = %s'
         cursor.execute(sql,(company_id))
         jobs=cursor.fetchall()
-        jobcount=len(jobs)
-        return render_template('company/dashboard.html',jobcounts=jobcount)
+        jobcount=len(jobs) 
+
+        #  count the 
+        sql = '''
+        SELECT candidate_id FROM postedjobs pj JOIN postedjobs_candidates pjc ON pj.id = pjc.postedjob_id
+        WHERE pj.company_id = %s
+        '''        
+        cursor.execute(sql, (company_id,))
+        applications = cursor.fetchall()
+        applications=len(applications)
+
+        return render_template('company/dashboard.html',jobcounts=jobcount,job_applicants=applications)
    else:
        return render_template('403.html')
 
@@ -405,6 +424,11 @@ def company_profile():
             company_description = request.form.get('company_description')  
 
             company_logo = request.files['company_logo']
+
+            if  admin_phone == 'None' or admin_phone == '':
+                flash('Admin phone number is required.', 'danger')
+                return redirect(url_for('company_profile'))
+            
             if company_logo and company_logo.filename != '':
                 filename = secure_filename(company_logo.filename)
                 logo_path = os.path.join('static/company_logos', filename)
@@ -523,7 +547,6 @@ def company_search():
         start = (page - 1) * per_page
         end = start + per_page
         paginated_data = company_posted_jobs[start:end]
-        print("company posted jobs are", paginated_data)
         return jsonify({'htmlresponse': render_template('company/components/posted_jobs.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages, locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)})
 
     else:
@@ -533,7 +556,23 @@ def company_search():
 @login_required
 def company_applications():
     if session['key'] == "company" :
-        return render_template('/company/applications.html')
+        company_id = session['id']
+        connection = pymysql.connect(**db_config)
+        cursor = connection.cursor()
+        
+        sql = '''
+        SELECT  job_title, COUNT(pjc.candidate_id) AS application_count
+        FROM postedjobs pj
+        LEFT JOIN postedjobs_candidates pjc ON pj.id = pjc.postedjob_id
+        WHERE pj.company_id = %s
+        GROUP BY pj.id, pj.job_title
+        '''
+        cursor.execute(sql, (company_id,))
+        job_applications = cursor.fetchall()
+        # job_applications_dict = {job['job_id']: job['application_count'] for job in job_applications}
+        print(job_applications)
+        
+        return render_template('/company/applications.html',job_application=job_applications)
     else:
         return render_template('403.html')
 
