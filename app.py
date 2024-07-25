@@ -102,18 +102,41 @@ def search():
     paginated_data = featured_jobs[start:end]
     return jsonify({'htmlresponse': render_template('components/response.html', postedjobs=paginated_data, page = page, per_page =per_page, total = pages  )})
 
+@app.route('/cand_search_jobs', methods=['POST'])
+def cand_search_jobs():
+    job_title = request.form.get('job_title')
+    location = request.form.get('location')
+    job_type = request.form.get('job_type')
+    salary_range = request.form.get('search_salary')
+    page = int(request.form.get('currentPage', 1))
+    tag = request.form.get('tag')
+    if tag == "None" or tag == "":
+        tag = None
+    if location == "None" or location == "Select Location":
+        location = None
+    if job_type == "None" or location == "Job Type":
+        job_type = None
+    
+    featured_jobs = get_featured_jobs(job_title=job_title, location=location, job_type=job_type, salary_range=salary_range, tag=tag)
+    per_page = 12
+    pages = math.ceil(len(featured_jobs) / per_page)
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_data = featured_jobs[start:end]
+    return jsonify({'htmlresponse': render_template('candidate/components/cand_dash_jobs.html', postedjobs=paginated_data, page = page, per_page =per_page, total = pages  )})
 
 
 @app.route('/find-jobs')
 def findJobs():
     locations = get_locations()
+    categories=category_tags()
     jobType = get_jobType()
     salaryRange = get_salaryRange()
     mycompanies = get_allcompanies()
     companies, total_records = get_companies(page=1, per_page=5)  # Initial load, first 5 companies
     total_pages = (total_records + 4) // 5  # Calculate total pages (5 items per page)
     featured_jobs = get_featured_jobs()
-    return render_template('find-jobs.html', locations=locations, jobtypes=jobType, salaryranges=salaryRange, companies=companies, total_pages=total_pages, postedjobs = featured_jobs, mycompanies=mycompanies)
+    return render_template('find-jobs.html', categories=categories,locations=locations, jobtypes=jobType, salaryranges=salaryRange, companies=companies, total_pages=total_pages, postedjobs = featured_jobs, mycompanies=mycompanies)
 
 
 
@@ -320,8 +343,12 @@ def companyLogin():
 @login_required
 def candidate_dashboard():
     if session['key'] == "candidate" :
+        categories=category_tags()
+        locations = get_locations()
+        jobType = get_jobType()
+        salaryRange = get_salaryRange()
 
-        return render_template('candidate/dashboard.html')
+        return render_template('candidate/dashboard.html',categories=categories,locations=locations,jobTypes=jobType)
     else:
        return render_template('403.html')
 
@@ -570,10 +597,31 @@ def company_search_applications():
         start = (page - 1) * per_page
         end = start + per_page
         paginated_data = company_posted_jobs[start:end]
-        print("company posted jobs are", paginated_data)
+        # print("company posted jobs are", paginated_data)
         return jsonify({'htmlresponse': render_template('company/components/applications.html', postedJobs=paginated_data, page = page, per_page =per_page, total = pages, locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)})
     else:
             return render_template('403.html')
+
+#getting applicants
+@app.route('/company/search/applicants/<int:job_id>', methods=['POST','GET'])
+@login_required
+def company_search_applicants(job_id):
+    if session['key'] == "company" :
+        professional_title = request.form.get('professional_title')
+    
+        applicants= get_applicants(job_id,professional_title)    
+       
+        page = int(request.form.get('currentPage', 1))        
+        per_page = 5
+        pages = math.ceil(len(applicants) / per_page)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_data = applicants[start:end]
+        print("company posted jobs are", paginated_data)
+        return jsonify({'htmlresponse': render_template('company/components/applicants.html',job_id=job_id,professional_title=professional_title,applicants=paginated_data, page = page, per_page =per_page, total = pages)})
+    else:
+        return render_template('403.html')
+
 
 #geting job applicants
 @app.route('/jobs/applicants/<int:job_id>')
@@ -581,8 +629,7 @@ def company_search_applications():
 def job_applicants(job_id):
     if session['key'] == "company" : 
         applicants= get_applicants(job_id)
-        print("my applicants are",applicants)
-        return render_template("/company/pages/applicants.html",applicants=applicants)
+        return render_template("/company/applicants.html",job_id=job_id,applicants=applicants)
     else:
             return render_template('403.html')
 

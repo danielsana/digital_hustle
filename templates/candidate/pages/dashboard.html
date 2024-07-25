@@ -1,119 +1,87 @@
+<style>
+    #btn-searchfeature {
+        border: 1px;
+        border-color: #007CAD;
+        border-style: double;
+        color: #f0ffff;
+        background-color: #007CAD;
+    }
+    #btn-searchfeature:hover {
+        background-color: #f0ffff;
+        color: #007CAD;
+        border-color: #007CAD;
+    }
+    .search-field {
+        padding: 5px 10px; 
+        color: #007CAD;
+    }
+    .search-job-title, .select-search-rating, .select-search-location {
+        width: 100%;
+    }
+</style>
 <div class="page-own-content">
     <div class="da-row">
         <div class="da-col-xs-12">
             <div class="dash-card">
-                <div class="search-bar-main">
-                    <form action="" method="POST" >
-                       
-                        <div class="search-bar-main-location">
-                            <div class="search-bar-main-icon">
-                                <span class="las la-map-marker"></span>
+                <div class="search-2-box ">
+                    <div class="row mx-3">
+                        <form action="javascript:void(0);" method="POST" class="row g-2 align-items-center">
+                            <div class="col-md-3">
+                                <input type="text" class="search-field form-control " autofocus placeholder="e.g Web Developer" id="search_text">
                             </div>
-                            <div class="search-bar-main-select">
-                                <select name="search_location" id="">
-                                    <option>Around You</option>
-                                    <option value="1">Location1</option>
-                                    <option value="2">Location2</option>
-                                    <option value="3">Location3</option>
-                                    <option value="4">Location4</option>
-                                    <option value="5">Location5</option>
+                            <div class="col-md-3">
+                                
+                                <select id="search_category" name="search_category" class="form-select search-field">
+                                    <option>Job Type</option>
+                                    {% for jobtype in jobTypes %}
+                                    <option value="{{ jobtype[0] }}">{{ jobtype[1] }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
-                        </div>
-                        <div class="search-bar-main-search-field">
-                            <input type="text" name="search_bar_main_input" placeholder="Search by Title, Company or any job's keyword">
-                        </div>
-                        <div class="search-bar-main-buttons">
-                            <div class="btn btn-blue3">
-                                <span class="las la-stream"></span>
-                                FILTER
+                            <div class="col-md-3">
+                                <select name="location" id="search_location" class="search-field form-select">
+                                    <option>Select Location</option>
+                                    {% for location in locations %}
+                                        <option value="{{location[0]}}">{{location[0]}}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
-                            <button type="submit" class="btn btn-blue3">
-                                <span class="las la-search"></span>
-                                FIND
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="da-row">
-        <div class="da-col-xs-12">
-            <div class="suggestions-container">
-                <div class="suggestions-text">
-                    <p>Suggestions:</p>
-                </div>
-                <div class="suggestions-pills">
-                    <span class="suggestion-pill">Android</span>
-                    <span class="suggestion-pill">MySQL</span>
-                    <span class="suggestion-pill">Python</span>
-                    <span class="suggestion-pill">HTML/CSS</span>
-                    <span class="suggestion-pill">Flask</span>
-                    <span class="suggestion-pill">API</span>
-                    <span class="suggestion-pill">CyberSec</span>
-                    <span class="suggestion-pill">Data Science</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="da-row">
-        <div class="search-result-controls">
-            <div class="search-result-controls-left">
-                <span>Showing 0 Job Results</span>
-                <span>Based on your preferences</span>
-            </div>
-            <div class="search-result-controls-right">
-                <form action="">
-                    @csrf
-                    <input name="fulltime" id="fulltime" type="radio" >
-                    <label for="fulltime">Full time</label>
-                    <input name="parttime" id="parttime" type="radio">
-                    <label for="parttime">Part time</label>
-                    <input name="remote" id="remote"  type="radio">
-                    <label for="remote">Remote</label>
-                    <select name="time-filter" id="">
-                        <option value=""> Newest</option>
-                    </select>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="da-row">
-        
-            <div class="da-col-xs-12 da-col-sm-6 da-col-md-4 da-col-lg-4">
-                <div class="dash-card">
-                    <div class="search-result-card">
-                        <div class="search-result-card-header">
-                            <div class="search-result-card-header-left">
-                                <span></span>
-                                <span></span>
-                                <span></span>
+                            <div class="col-md-3">
+                                <button class="btn btn-primary w-100 " id="btn-searchfeature">
+                                    <i class="fas fa-search"></i><span class="ms-2">Search</span>
+                                </button>
                             </div>
-                            <div class="search-result-card-header-right">
-                                <div class="search-result-card-header-company-logo">
-                                    <img src="" alt="">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="search-result-card-body">
-                            <p>
-                               
-                            </p>
-                        </div>
-                        <div class="search-result-card-footer">
-                            <span></span>
-                            <span></span>
-                        </div>
-                        <div class="search-result-card-foot">
-                            <a href="#" class="btn btn-blue2">View</a>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+
+    <div class="da-row">
+        <div class="da-col-xs-12">
+            <div class="suggestions-container">
+                <div class="s">
+                    <p>Suggestions:</p>
+                </div>
+                <div class="suggestions-pills d-inline">
+                    {% for cat in categories %}
+
+                        <span id="{{cat[0]}}" onclick="(cat_tags(this.id))" id="{{cat[0]}}" class="suggestion-pill">{{ cat[0]}}</span>
+                        
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <div class=" mt-5">        
+        <div id="cand_dash_jobs" >
             
+        </div>            
     </div>
 
 </div>

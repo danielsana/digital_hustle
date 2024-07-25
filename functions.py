@@ -286,6 +286,7 @@ def get_allcompanies():
     cursor.close()
     connection.close()
     return companies
+
 def get_job_locations():
     connection = pymysql.connect(**db_config)
     cursor = connection.cursor()
@@ -345,17 +346,24 @@ def get_company_posted_jobs(company_id, job_title=None, location=None, job_type=
     return posted_jobs
 
 # get jpob applicants functions
-def get_applicants(job_id):
+def get_applicants(job_id,professional_title=None):
     connection = pymysql.connect(**db_config)
     cursor = connection.cursor()
 
-    query= """SELECT * FROM `postedjobs_candidates` pjc
+    query= """SELECT `id`, `email`, `fname`, `lname`, `surname`, `phone`, `password`, `cv_upload`, `profile_pic`, `professional_title`, `gender`, `dob`, `national_id_no`, `address`, `bio`, `country_id`, `email_verified_at` FROM `postedjobs_candidates` pjc
         LEFT JOIN candidates c ON c.id = pjc.candidate_id
      WHERE `postedjob_id` = %s"""
-    try:
-        cursor.execute(query,(job_id))
-        applicants = cursor.fetchall()
-        connection.commit()
-    except:
-        connection.rollback()
+    
+    params = [job_id]
+    # print(job_id)
+    if professional_title:
+        query += " AND `professional_title` LIKE %s"
+        params.append(f"%{professional_title}%")
+    query += " GROUP BY `id` ORDER BY pjc.`updated_at` DESC "
+    # print(query)
+
+    cursor.execute(query,(params))
+    applicants = cursor.fetchall()
+    connection.commit()
     return applicants
+
