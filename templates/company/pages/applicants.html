@@ -1,1 +1,37 @@
-{{applicants}}
+<div class="profile-bio-container col-md-12 col-sm-6">
+    <div class="profile-bio-wrapper card p-3">
+      <div class="row text-center">
+        <div class="card-title">
+          <h4 style="color: #2b4b83">Applicants List</h4>
+        </div>
+        <input type="hidden" value="{{job_id}}" id="job_id">
+        <div class="col-md-3 mx-3">
+          <form action="javascript:void(0);" method="POST">
+            <div class="pull-left search">
+              <input
+                id="search_posted_job"
+                class="form-control"
+                type="text"
+                placeholder="Job Title e.g: Web Developer"
+              />
+            </div>
+          </form>
+        </div>
+        <div
+          id="applicants"
+          class="table-responsive col-md-12 col-lg-12 col-sm-12"
+        >
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="spinner-grow text-danger" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
