@@ -1,103 +1,311 @@
+<style>
+    .candidate-profile-table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
+
+.candidate-profile-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.candidate-profile-table th, .candidate-profile-table td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 2px solid #ddd;
+    vertical-align: top;
+}
+
+.candidate-profile-table th {
+    font-size: .9rem;
+    font-weight: 800;
+    color: blue;
+}
+
+.candidate-profile-table td {
+    font-size: .8rem;
+    color: var(--gray-1);
+}
+
+.inner-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inner-table td {
+    border: 1px solid #ddd;
+    padding: 4px;
+    text-align: left;
+}
+
+/* profile bio wrapper  */
+.candidate-profile-bio-wrapper{
+    display: flex;
+    flex-direction: row;
+    column-gap: 1rem;
+}
+/* update profile button  */
+.btn-profile{
+    background: #065271;
+    color: aliceblue;
+    border-radius: 15px;
+    padding: 10px;
+    text-decoration: none;
+  }
+  .btn-profile:hover{
+    background-color: #297ce7;
+    color: white;
+  }
+
+</style>
+
 <div class="page-own-content">
     <div class="profile-bio-container">
-        <div class="profile-bio-wrapper">
+        <small>
+            {% with messages = get_flashed_messages(with_categories=true) %} 
+                {% if messages %} 
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }}" role="alert">
+                        {{ message }}
+                    </div>
+                    {% endfor %} 
+                {% endif %} 
+            {% endwith %}
+        </small>
+        <div class="candidate-profile-bio-wrapper">
             <div class="profile-image-box">
                 <div class="profile-image">
-                    <img src="" alt="" class="profile-img">
+                    <img src="{{ url_for('static', filename='/candidate_profile_pics/' + profile.profile_pic) }}" alt="Profile Picture" class="profile-img" style="width: 100px;height: 100px;">
+                   
                 </div>
             </div>
-            <div class="profile-bio">
-                <h3>
+            <div class="profile-bio" >
+                <h3 style="display: flex; justify-content: space-between;align-items: center;">
+                    {{ profile.fname }} {{ profile.lname }}
                     
-
-                    <a href="" class="profile-edit-icon">
-                        <span class="las la-edit"></span>
+                    
+                    <a href="/candidate/edit-profile" class="btn btn-primary me-3">
+                        <i class="las la-edit me-2"></i>Update Profile
                     </a>
                 </h3>
-                <h5>
-                    
-                </h5>
-                <p>
-                   
-                </p>
+                <h5>{{ profile.professional_title }}</h5>
+                <p>{{ profile.bio }}</p>
             </div>
         </div>
     </div>
+
     <div class="profile-bio-container">
         <div class="profile-bio-wrapper">
-            <div class="profile-table-container">
-                <table class="profile-table">
+            <div class="candidate-profile-table-container">
+                <table class="candidate-profile-table">
                     <tr>
                         <th>Personal</th>
                     </tr>
                     <tr>
                         <td>Birthday:</td>
-                        <td></td>
+                        <td>{{ profile.dob }}</td>
                     </tr>
                     <tr>
                         <td>Gender:</td>
-                        <td></td>
+                        <td>{{ profile.gender }}</td>
                     </tr>
                     <tr>
                         <td>National ID No:</td>
-                        <td></td>
+                        <td>{{ profile.national_id_no }}</td>
                     </tr>
                     <tr>
                         <th>Contacts</th>
                     </tr>
                     <tr>
                         <td>Phone:</td>
-                        <td></td>
+                        <td>{{ profile.phone }}</td>
                     </tr>
                     <tr>
                         <td>Email:</td>
-                        <td></td>
+                        <td>{{ profile.email }}</td>
                     </tr>
                     <tr>
                         <td>Address:</td>
-                        <td></td>
+                        <td>{{ profile.address }}</td>
                     </tr>
-                    <tr>
-                        <th></th>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                    </tr>
-
                 </table>
             </div>
         </div>
     </div>
+
     <div class="profile-bio-container">
         <div class="profile-bio-wrapper">
             <div class="profile-cv-upload">
-                <div class="profile-cv-upload-title">
-                    <h4>My Files</h4>
-                </div>
-                <div class="profile-cv-upload-body">
-                    <p>
-                        Click to Upload a CV
-                        <a href="" class="btn btn-blue2">Upload</a>
-                    </p>
-
-                </div>
+               
                 <div class="profile-cv-title">
                     <h4>Below is your latest CV:</h4>
-                    <p class="text-italics t2">Uploaded: </p>
-                </div>
+                    <p class="text-italics t2">
+                        Uploaded: {{ profile.updated_at or profile.cv_upload or 'No CV uploaded' }}
+                    </p></div>
                 <div class="profile-cv-display">
-                    <a href="" target="_blank">
-                        <div class="profile-cv-box" >
-                            <img src=" alt="" class="profile-cv-img">
+                    {% if profile.cv_upload %}
+                    <a href="{{ url_for('static', filename='cv_files/' ~ profile.cv_upload) }}" target="_blank">
+                        <div class="profile-cv-box">
+                            <img src="{{ url_for('static', filename='cv_files/' ~ profile.cv_upload) }}" alt="CV" class="profile-cv-img">
                         </div>
                     </a>
+                      {{profile.cv_upload}}
+                    {% else %}
+                    <p>No CV uploaded</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Display Skills and Attributes -->
+    <div class="profile-bio-container">
+    <div class="profile-bio-wrapper">
+        <h4>Skills and Languages</h4>
+        <div class="candidate-profile-table-container">
+            <table class="candidate-profile-table">
+                <thead>
+                    <tr>
+                        <th>Technical Skills</th>
+                        <th>Soft Skills</th>
+                        <th>Languages</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            {% if technical_skills %}
+                            <table class="inner-table">
+                                {% for skill in technical_skills %}
+                                <tr>
+                                    <td>{{ skill.skill_name }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td>No technical skills added</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                            {% else %}
+                            <p>No technical skills added</p>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if soft_skills %}
+                            <table class="inner-table">
+                                {% for soft_skill in soft_skills %}
+                                <tr>
+                                    <td>{{ soft_skill.skill_name }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td>No soft skills added</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                            {% else %}
+                            <p>No soft skills added</p>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if languages %}
+                            <table class="inner-table">
+                                {% for language in languages %}
+                                <tr>
+                                    <td>{{ language.language }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td>No languages added</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                            {% else %}
+                            <p>No languages added</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+
+    <!-- work experiences  -->
+    <div class="profile-bio-container">
+        <div class="profile-bio-wrapper">
+            <h4>Work Experience</h4>
+            <br>
+            <div class="candidate-profile-table-container">
+                <table class="candidate-profile-table">
+                    <thead>
+                        <tr>
+                            <th>Company Name</th>
+                            <th>Job Title</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if work_experiences %}
+                            {% for experience in work_experiences %}
+                            <tr>
+                                <td>{{ experience.company_name }}</td>
+                                <td>{{ experience.job_title }}</td>
+                                <td>{{ experience.from_date }}</td>
+                                <td>{{ experience.to_date }}</td>
+                                <td>{{ experience.description }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="5">No work experience added</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    
+
+    <!-- candidate certifications  -->
+     <div class="profile-bio-container">
+        <div class="profile-bio-wrapper">
+            <h4>Certifications</h4>
+            <div class="candidate-profile-table-container">
+                <table class="candidate-profile-table">
+                    <thead>
+                        <tr>
+                            <th>Certification Name</th>
+                            <th>Description</th>
+                            <th>Issue Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if certifications %}
+                            {% for cert in certifications %}
+                            <tr>
+                                <td>{{ cert.certification_name }}</td>
+                                <td>{{ cert.description }}</td>
+                                <td>{{ cert.date_awarded }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="3">No certifications added</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    
+</div>
+

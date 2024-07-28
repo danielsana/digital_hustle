@@ -1,345 +1,730 @@
+<style>
+    .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .pagination button {
+        margin: 0 5px;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        background-color: #007bff; /* Default button color */
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+    .pagination button:disabled {
+        background-color: #ddd;
+        color: black;
+        cursor: not-allowed;
+    }
+    .pagination button.active {
+        background-color: #0056b3; /* Active page color */
+    }
+    .pagination .last {
+        background-color: #6c757d; /* Default color for last button */
+    }
+    .pagination button i {
+        margin: 0 5px;
+    }
+    .pagination span {
+        margin: 0 10px;
+    }
+    .pagination .page-number {
+        font-weight: bold;
+        background-color: transparent;
+        color: #007bff; /* Default page button color */
+    }
+    .pagination .page-number.active {
+        background-color: #0056b3; /* Active page number color */
+        color: white;
+    }
+</style>
 <div class="page-own-content">
-
-
-<div class="page-row">
-    <div class="page-title">
-        <h3>
-            <!-- <a href="" class="edit-link">back</a> -->
-            Profile / Edit
-        </h3>
-
-
-       {% if success %}
-        <div class="da-alert da-alert-success" role="alert">
-            {{success}}
-            <button type="button" class="da-close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        {% endif %}
-
-      
-    </div>
-</div>
- <div class="page-content">
     <div class="page-row">
-        <div class="page-col">
-            <div class="page-content-title">
-                <p>Manage your profile below</p>
-            </div>
-        </div>
-    </div>
-</div> 
-<div class="profile-bio-container">
-
-    <div class="profile-bio-wrapper">
-        <div class="profile-image-box">
-            <div class="profile-image" style="margin-bottom: 20px;">
-                <img src="{{ url_for('static', filename='/candidate_profile_pics/' + session['profile_pic']) }}" alt="Profile Picture" class="profile-img" style="object-fit: contain; ">
+        <div class="page-title">
+            <h3>
                
-            </div>
+                <a href="/candidate/profile" class="btn btn-primary">
+                    <i class="las la-chevron-left me-2"></i>Back 
+                </a>
+              
 
-            <div class="profile-image-link">
-                <a href="{{ url_for('upload_photo') }}">Change Photo</a>
-            </div>
-
-        </div>
-
-        <div class="profile-bio">
-
-            <form action="/candidate/update-bio" method="POST">
-               
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <h5>Personal Details</h5>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">First name</label>
-                        <input type="text" class="profile-input" name="fname" value="{{session['fname']}}">
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Last name</label>
-                        <input type="text" class="profile-input" name="lname" value="{{session['lname']}}">
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Surname</label>
-                        <input type="text" class="profile-input" name="surname" value="{{session['surname']}}">
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-                </div>
-
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Phone</label>
-                        <input type="text" class="profile-input" name="phone" value="{{session['phone']}}">
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Proffesional Title</label>
-                        <input type="text" class="profile-input" name="title" value="{{session['title']}}">
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Gender</label>
-                        <select class="profile-select" name="gender">
-                            <option>--Choose--</option>
-                            
-                            <option value="1" >Male</option>
-                            <option value="2" >Female</option>
-                        </select>
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">D.O.B</label>
-                        <input type="date" class="profile-input" name="dob" value="{{session['dob']}}">
-                        <small class="form-error">
-                            <small class="form-error">
-                                
-                            </small>
-                        </small>
-                    </div>
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">National ID No.</label>
-                        <input type="text" class="profile-input" name="national_id_no" value="{{session['national_id_no']}}">
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Address</label>
-                        <input type="text" class="profile-input" name="address" value="{{session['address']}}">
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Bio</label>
-                        <textarea class="profile-textarea" name="bio">{{session['bio']}}</textarea>
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <button type="submit" class="btn btn-blue2">Update</button>
-                    </div>
-                </div>
-            </form>
-
+                Profile / Edit
+            </h3>
+            <small>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </small>
         </div>
     </div>
-</div>
 
-
-<div class="profile-bio-container">
-    <div class="profile-bio-wrapper">
-        <div class="profile-bio">
-            {% if error %}
-                <div class="da-alert da-alert-danger" role="alert">
-                    {{error}}
-                    <button type="button" class="da-close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endif %}
-            <form action="/candidate/update-skills-attributes" method="POST">
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <h5>Skills and Attributes</h5>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Technical Skills</label>
-                        <select class="profile-select" name="technical_skills[]" id="technical_skills" multiple>
-                            
-                            {% for skill in skills %}
-                                <option value="{{ skill[0] }}">{{ skill[1] }}</option>
-                            {% endfor %}
-                            
-                        </select>
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Soft Skills</label>
-                        <select class="profile-select" name="soft_skills[]" id="soft_skills" multiple>
-                            
-                            {% for softskill in softskills %}
-                                 <option value="{{ softskill[0] }}">{{ softskill[1] }}</option>
-                            {% endfor %}
-                           
-                        </select>
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Languages</label>
-                        <select class="profile-select" name="languages[]" id="languages" multiple>
-                            
-                            {% for language in languages %}
-                                 <option value="{{ language[0] }}">{{ language[1] }}</option>
-                            {% endfor %}
-                            
-                        </select>
-                        <small class="form-error">
-                            
-                        </small>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <button class="btn btn-blue2">Update</button>
-                    </div>
-                </div>
-
-            </form>
-        </div>
-    </div>
-</div>
-<div class="profile-bio-container">
-    <div class="profile-bio-wrapper">
-        <div class="profile-bio">
-            <form action="/candidate/update-work-experience" method="POST">
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <h5>Work Experience</h5>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <label for="company_name" class="profile-label">Company Name</label>
-                        <input type="text" class="profile-input" name="company_name" id="company_name" value="{{ session['company_name'] }}" required>
-                    </div>
-                    <div class="profile-form-group-col">
-                        <label for="job_title" class="profile-label">Job Title</label>
-                        <input type="text" class="profile-input" name="job_title" id="job_title" value="{{ session['job_title'] }}" required>
-                    </div>
-                    <div class="profile-form-group-col">
-                        <label for="from_date" class="profile-label">From Date</label>
-                        <input type="date" class="profile-input" name="from_date" id="from_date" value="{{ session['from_date'] }}" required>
-                    </div>
-                    <div class="profile-form-group-col">
-                        <label for="to_date" class="profile-label">To Date</label>
-                        <input type="date" class="profile-input" name="to_date" id="to_date" value="{{ session['to_date'] }}" required>
-                    </div>
-                    <div class="profile-form-group-col">
-                        <label for="description" class="profile-label">Description</label>
-                        <textarea class="profile-input" name="description" id="description" rows="4" required>{{ session['description'] }}</textarea>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <button type="submit" class="btn btn-blue2">Update</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="profile-bio-container">
-    <div class="profile-bio-wrapper">
-        <div class="profile-bio">
-            <form action="/candidate/update-certifications" method="POST">
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <h5>Certifications</h5>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <label for="company_name" class="profile-label">Certification Name</label>
-                        <input type="text" class="profile-input" name="certification_name" id="company_name" value="{{ session['certification_name'] }}" required>
-                    </div>
-                  
-                    <div class="profile-form-group-col">
-                        <label for="from_date" class="profile-label">From Date</label>
-                        <input type="date" class="profile-input" name="date_awarded" id="from_date" value="{{ session['date_awarded'] }}" required>
-                    </div>
-                    <div class="profile-form-group-col">
-                        <label for="job_title" class="profile-label">Certification Description</label>
-                        <input type="text" class="profile-input" name="description" id="job_title" value="{{ session['desc'] }}" required>
-                    </div>
+    <div class="profile-bio-container">
+        <div class="profile-bio-wrapper">
+            <div class="profile-image-box d-flex justify-content-start  align-items-center ">
+                <div class="profile-image">
+                    <img src="{{ url_for('static', filename='/candidate_profile_pics/' + profile.profile_pic) }}" alt="Profile Picture" class="profile-img" style="width: 100px;height: 100px;">
                    
                 </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <button type="submit" class="btn btn-blue2">Update</button>
-                    </div>
+              
+                <div class="d-flex justify-content-end align-items-center ms-3">
+                    <a href="/candidate/upload-photo" class="btn btn-primary">
+                        <i class="las la-edit me-2"></i>Change photo
+                    </a>
                 </div>
-            </form>
+            </div>
+            <div class="profile-bio">
+                <form action="/candidate/edit-profile" method="POST">
+                    <div class="profile-form-row">
+                        <div class="profile-form-group-col">
+                            <h5>Personal Details</h5>
+                        </div>
+                    </div>
+                    <div class="profile-form-row">
+                        <div class="profile-form-group-col">
+                            <label for="fname" class="profile-label">First name</label>
+                            <input type="text" class="profile-input" name="fname" value="{{ profile.fname }}">
+                        </div>
+                        <div class="profile-form-group-col">
+                            <label for="lname" class="profile-label">Last name</label>
+                            <input type="text" class="profile-input" name="lname" value="{{ profile.lname }}">
+                        </div>
+                        <div class="profile-form-group-col">
+                            <label for="surname" class="profile-label">Surname</label>
+                            <input type="text" class="profile-input" name="surname" value="{{ profile.surname }}">
+                        </div>
+                    </div>
+                    <div class="profile-form-row">
+                        <div class="profile-form-group-col">
+                            <label for="phone" class="profile-label">Phone</label>
+                            <input type="text" class="profile-input" name="phone" value="{{ profile.phone }}">
+                        </div>
+                        <div class="profile-form-group-col">
+                            <label for="professional_title" class="profile-label">Professional Title</label>
+                            <input type="text" class="profile-input" name="professional_title" value="{{ profile.professional_title }}">
+                        </div>
+                        <div class="profile-form-group-col">
+                            <label for="gender" class="profile-label">Gender</label>
+                            <select class="profile-select" name="gender">
+                                <option value="">--Choose--</option>
+                                <option value="Male" {{ 'selected' if profile.gender == 'Male' }}>Male</option>
+                                <option value="Female" {{ 'selected' if profile.gender == 'Female' }}>Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="profile-form-row">
+                        <div class="profile-form-group-col">
+                            <label for="dob" class="profile-label">D.O.B</label>
+                            <input type="date" class="profile-input" name="dob" value="{{ profile.dob }}">
+                        </div>
+                        <div class="profile-form-group-col">
+                            <label for="national_id_no" class="profile-label">National ID No.</label>
+                            <input type="text" class="profile-input" name="national_id_no" value="{{ profile.national_id_no }}">
+                        </div>
+                        <div class="profile-form-group-col">
+                            <label for="address" class="profile-label">Address</label>
+                            <input type="text" class="profile-input" name="address" value="{{ profile.address }}">
+                        </div>
+                    </div>
+                    <div class="profile-form-row">
+                        <div class="profile-form-group-col">
+                            <label for="bio" class="profile-label">Bio</label>
+                            <textarea class="profile-textarea" name="bio">{{ profile.bio }}</textarea>
+                        </div>
+                    </div>
+                    <div class="profile-form-row">
+                        <div class="profile-form-group-col">
+                            <button class="btn btn-primary las la-upload p-2" type="submit">Update</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            
+        </div>
+    </div>
+<!-- UPLOAD CANDIDATE CV -->
+<div class="profile-bio-container">
+    <div class="profile-bio-wrapper">
+        <div class="profile-cv-upload">
+            <div class="profile-cv-upload-title">
+                <h4>My Files</h4>
+            </div>
+            
+               
+                <div class="d-flex justify-content-end align-items-center me-3">
+                    <a href="{{ url_for('upload_cv') }}" class="btn btn-primary">
+                        <i class="las la-edit me-2"></i>Edit
+                    </a>
+                </div>
+            
+            <div class="profile-cv-title">
+                <h4>Below is your latest CV:</h4>
+                <p class="text-italics t2">
+                    Uploaded: {{ profile.updated_at or profile.cv_upload or 'No CV uploaded' }}
+                </p>
+            </div>
+            <div class="profile-cv-display">
+                {% if profile.cv_upload %}
+                <a href="{{ url_for('static', filename='cv_files/' ~ profile.cv_upload) }}" target="_blank">
+                    <div class="profile-cv-box">
+                        <img src="{{ url_for('static', filename='cv_files/' ~ profile.cv_upload) }}" alt="CV" class="profile-cv-img">
+                    </div>
+                </a>
+                  {{profile.cv_upload}}
+                {% else %}
+                <p>No CV uploaded</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- skills and languages tab  -->
+<div class="profile-bio-container">
+    <div class="profile-bio-wrapper">
+        <div class="container">
+            <!-- Nav Tabs -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="technical-skills-tab" data-toggle="tab" href="#technical-skills" role="tab" aria-controls="technical-skills" aria-selected="true">Technical Skills</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="soft-skills-tab" data-toggle="tab" href="#soft-skills" role="tab" aria-controls="soft-skills" aria-selected="false">Soft Skills</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="languages-tab" data-toggle="tab" href="#languages" role="tab" aria-controls="languages" aria-selected="false">Languages</a>
+                </li>
+            </ul>
+            
+            <!-- Tab Panes -->
+            <div class="tab-content" id="myTabContent">
+             <!-- Technical Skills Tab -->
+<div class="tab-pane fade show active" id="technical-skills" role="tabpanel" aria-labelledby="technical-skills-tab">
+    <div class="d-flex justify-content-end align-items-center m-3">
+        <button class="btn btn-success" data-toggle="modal" data-target="#addTechnicalSkillModal">
+            <i class="las la-plus me-2"></i>Add
+        </button>
+    </div>
+    <table class="table table-bordered" id="technical-skills-table">
+        <thead>
+            <tr>
+                <th>Skill</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if skills %}
+                {% for skill in skills %}
+                    <tr data-id="{{ skill[0] }}">
+                        <td>{{ skill.skill_name }}</td>
+                        <td>
+                            <form method="POST" action="/candidate/delete-skill/{{ skill.id }}" style="display:inline;">
+                                <button class="btn btn-danger btn-sm delete-skill" type="submit">DELETE</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2" class="text-center">No technical skills found.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Soft Skills Tab -->
+<div class="tab-pane fade" id="soft-skills" role="tabpanel" aria-labelledby="soft-skills-tab">
+    <div class="d-flex justify-content-end align-items-center m-3">
+        <button class="btn btn-success" data-toggle="modal" data-target="#addSoftSkillModal">
+            <i class="las la-plus me-2"></i>Add
+        </button>
+    </div>
+    <table class="table table-bordered" id="soft-skills-table">
+        <thead>
+            <tr>
+                <th>Soft Skill</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if softskills %}
+                {% for softskill in softskills %}
+                    <tr data-id="{{ softskill[0] }}">
+                        <td>{{ softskill.skill_name }}</td>
+                        <td>
+                            <form method="POST" action="/candidate/delete-softskill/{{ softskill.id }}" style="display:inline;">
+                                <button class="btn btn-danger btn-sm delete-softskill" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2" class="text-center">No soft skills found.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Languages Tab -->
+<div class="tab-pane fade" id="languages" role="tabpanel" aria-labelledby="languages-tab">
+    <div class="d-flex justify-content-end align-items-center m-3">
+        <button class="btn btn-success" data-toggle="modal" data-target="#addLanguageModal">
+            <i class="las la-plus me-2"></i>Add
+        </button>
+    </div>
+    <table class="table table-bordered" id="languages-table">
+        <thead>
+            <tr>
+                <th>Language</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if languages %}
+                {% for language in languages %}
+                    <tr data-id="{{ language[0] }}">
+                        <td>{{ language.language }}</td>
+                        <td>
+                            <form method="POST" action="/candidate/delete-language/{{ language.id }}" style="display:inline;">
+                                <button class="btn btn-danger btn-sm delete-language" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2" class="text-center">No languages found.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Soft Skill Modal -->
+<div class="modal fade" id="addSoftSkillModal" tabindex="-1" role="dialog" aria-labelledby="addSoftSkillModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSoftSkillModalLabel">Add Soft Skill</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               
+                <form method="POST" action="/candidate/add-soft-skill">
+                    {% if unselected_soft_skills %}
+                        <div class="form-group">
+                            <label for="add-soft-skills">Choose Skills</label>
+                            <select id="add-soft-skills" name="soft_skills[]" class="form-control full-width" multiple required>
+                                {% for skill in unselected_soft_skills %}
+                                    <option value="{{ skill.id }}">{{ skill.skill_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Save changes</button>
+                    {% else %}
+                        <p class="text-muted">All soft skills have already been selected.</p>
+                    {% endif %}
+                    <button type="button" class="btn btn-secondary mt-3" data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Add Technical Skill Modal -->
+<div class="modal fade" id="addTechnicalSkillModal" tabindex="-1" role="dialog" aria-labelledby="addTechnicalSkillModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTechnicalSkillModalLabel">Add Technical Skill</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="/candidate/add-technical-skill">
+                    {% if unselected_skills %}
+                        <div class="form-group">
+                            <label for="add-technical-skills">Choose Skills</label>
+                            <select id="add-technical-skills" name="technical_skills[]" class="form-control full-width" multiple required>
+                                {% for skill in unselected_skills %}
+                                    <option value="{{ skill.id }}">{{ skill.skill_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Save changes</button>
+                    {% else %}
+                        <p class="text-muted">All technical skills have already been selected.</p>
+                    {% endif %}
+                    <button type="button" class="btn btn-secondary mt-3" data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Language Modal -->
+<div class="modal fade" id="addLanguageModal" tabindex="-1" role="dialog" aria-labelledby="addLanguageModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addLanguageModalLabel">Add Language</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="/candidate/add-language">
+                    {% if unselected_languages %}
+                        <div class="form-group">
+                            <label for="add-languages">Choose Languages</label>
+                            <select id="add-languages" name="languages[]" class="form-control full-width" multiple required>
+                                {% for language in unselected_languages %}
+                                    <option value="{{ language.id }}">{{ language.language }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Save changes</button>
+                    {% else %}
+                        <p class="text-muted">All languages have already been selected.</p>
+                    {% endif %}
+                    <button type="button" class="btn btn-secondary mt-3" data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
 
+<!-- CERTIFICATION AND WORK EXPERIENCE TABS -->
 
 <div class="profile-bio-container">
     <div class="profile-bio-wrapper">
-        <div class="profile-bio">
-            <form action="">
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <h5>Education</h5>
+        <div class="container">
+            <!-- Nav Tabs -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="certifications-tab" data-toggle="tab" href="#certifications" role="tab" aria-controls="certifications" aria-selected="true">Certifications</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="work-experience-tab" data-toggle="tab" href="#work-experience" role="tab" aria-controls="work-experience" aria-selected="false">Work Experience</a>
+                </li>
+            </ul>
+            
+            <!-- Tab Panes -->
+            <div class="tab-content" id="myTabContent">
+                <!-- Certifications Tab -->
+                <div class="tab-pane fade show active" id="certifications" role="tabpanel" aria-labelledby="certifications-tab">
+                    <div class="d-flex justify-content-end align-items-center m-3">
+                        <button class="btn btn-success" data-toggle="modal" data-target="#addCertificationModal">
+                            <i class="las la-plus me-2"></i>Add 
+                        </button>
                     </div>
+                    <table class="table table-bordered" id="certifications-table">
+                        <thead>
+                            <tr>
+                                <th>Certification Name</th>
+                                <th>Date Awarded</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="certifications-table-body">
+                            <!-- Dynamic content will be loaded here -->
+                        </tbody>
+                    </table>
+                    {% if certifications %}
+                        <div class="pagination">
+                            <button id="prev-certifications" class="btn btn-secondary">
+                                <i class="las la-chevron-left"></i> Previous
+                            </button>
+                            <span>Page <span class="page-number" id="current-page-display-certifications">1</span> of <span class="page-number" id="total-pages-display-certifications">1</span></span>
+                            <button id="next-certifications" class="btn btn-secondary">
+                                Next <i class="las la-chevron-right"></i>
+                            </button>
+                        </div>
+                    {% endif %}
                 </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Education 1</label>
-                        <input type="text" class="profile-input" name="work_experience">
-                        <small class="form-error">
-                            
-                        </small>
+
+                <!-- Certifications Tab -->
+<div class="tab-pane fade" id="certifications" role="tabpanel" aria-labelledby="certifications-tab">
+    <div class="d-flex justify-content-end align-items-center m-3">
+        <button class="btn btn-success" data-toggle="modal" data-target="#addCertificationModal">
+            <i class="las la-plus me-2"></i>Add
+        </button>
+    </div>
+    <table class="table table-bordered" id="certifications-table">
+        <thead>
+            <tr>
+                <th>Certification</th>
+                <th>Date Awarded</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Content dynamically filled by JavaScript -->
+        </tbody>
+    </table>
+    <div class="pagination">
+        <button id="prev-certifications" class="btn btn-secondary">
+            <i class="las la-chevron-left"></i> Previous
+        </button>
+        <span>Page <span class="page-number" id="current-page-display-certifications">1</span> of <span class="page-number" id="total-pages-display-certifications">1</span></span>
+        <button id="next-certifications" class="btn btn-secondary">
+            Next <i class="las la-chevron-right"></i>
+        </button>
+    </div>
+</div>
+
+    
+                <!-- Work Experience Tab -->
+                <div class="tab-pane fade" id="work-experience" role="tabpanel" aria-labelledby="work-experience-tab">
+                    <div class="d-flex justify-content-end align-items-center m-3">
+                        <button class="btn btn-success" data-toggle="modal" data-target="#addWorkExperienceModal">
+                            <i class="las la-plus me-2"></i>Add 
+                        </button>
                     </div>
+                    <table class="table table-bordered" id="work-experience-table">
+                        <thead>
+                            <tr>
+                                <th>Company Name</th>
+                                <th>Job Title</th>
+                                <th>From Date</th>
+                                <th>To Date</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="work-experience-table-body">
+                            <!-- Dynamic content will be loaded here -->
+                        </tbody>
+                    </table>
+                    {% if work_experiences %}
+                        <div class="pagination">
+                            <button id="prev-work-experience" class="btn btn-secondary">
+                                <i class="las la-chevron-left"></i> Previous
+                            </button>
+                            <span>Page <span class="page-number" id="current-page-display-work-experience">1</span> of <span class="page-number" id="total-pages-display-work-experience">1</span></span>
+                            <button id="next-work-experience" class="btn btn-secondary">
+                                Next <i class="las la-chevron-right"></i>
+                            </button>
+                        </div>
+                    {% endif %}
                 </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <label for="" class="profile-label">Education 2</label>
-                        <input type="text" class="profile-input" name="certifications">
-                        <small class="form-error">
-                           
-                        </small>
-                    </div>
-                </div>
-                <div class="profile-form-row">
-                    <div class="profile-form-group-col">
-                        <button class="btn btn-blue2">Update</button>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 
+
+<!-- Edit Work Experience Modal -->
+<div class="modal fade" id="editWorkExperienceModal" tabindex="-1" aria-labelledby="editWorkExperienceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-success" id="editWorkExperienceModalLabel">Edit Work Experience</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editWorkExperienceForm" action="/candidate/update-work-experience" method="post">
+                    <input type="hidden" id="edit_work_experience_id" name="id">
+                    <div class="mb-1">
+                        <label for="edit_company_name" class="form-label text-primary">Company Name:</label>
+                        <input type="text" class="form-control" id="edit_company_name" name="company_name" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="edit_job_title" class="form-label text-primary">Job Title:</label>
+                        <input type="text" class="form-control" id="edit_job_title" name="job_title" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="edit_from_date" class="form-label text-primary">From Date:</label>
+                        <input type="date" class="form-control" id="edit_from_date" name="from_date" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="edit_to_date" class="form-label text-primary">To Date:</label>
+                        <input type="date" class="form-control" id="edit_to_date" name="to_date" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="edit_description" class="form-label text-primary">Description:</label>
+                        <textarea class="form-control" id="edit_description" name="description" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
+
+<!-- Add Work Experience Modal -->
+<div class="modal fade" id="addWorkExperienceModal" tabindex="-1" aria-labelledby="addWorkExperienceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-success" id="addWorkExperienceModalLabel">Add Work Experience</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addWorkExperienceForm" action="/candidate/add-work-experience" method="post">
+                    <div class="mb-1">
+                        <label for="add_company_name" class="form-label text-primary">Company Name:</label>
+                        <input type="text" class="form-control" id="add_company_name" name="company_name" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="add_job_title" class="form-label text-primary">Job Title:</label>
+                        <input type="text" class="form-control" id="add_job_title" name="job_title" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="add_from_date" class="form-label text-primary">From Date:</label>
+                        <input type="date" class="form-control" id="add_from_date" name="from_date" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="add_to_date" class="form-label text-primary">To Date:</label>
+                        <input type="date" class="form-control" id="add_to_date" name="to_date" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="add_description" class="form-label text-primary">Description:</label>
+                        <textarea class="form-control" id="add_description" name="description" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Work Experience</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Certification Modal -->
+<div class="modal fade" id="editCertificationModal" tabindex="-1" aria-labelledby="editCertificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-success" id="editCertificationModalLabel">Edit Certification</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editHouseForm" action="/candidate/update-certifications" method="post">
+                    <input type="hidden" id="edit_certification_id" name="id">
+                    <div class="mb-1">
+                        <label for="edit_certification_name" class="form-label text-primary">Certification Name:</label>
+                        <input type="text" class="form-control" id="edit_certification_name" name="certification_name" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="edit_certification_date" class="form-label text-primary">Date Awarded:</label>
+                        <input type="date" class="form-control" id="edit_certification_date" name="date_awarded" required>
+                    </div>                 
+                    <div class="mb-1">
+                        <label for="edit_certification_description" class="form-label text-primary">Description:</label>
+                        <textarea class="form-control" id="edit_certification_description" name="description" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Certification Modal -->
+<div class="modal fade" id="addCertificationModal" tabindex="-1" aria-labelledby="addCertificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-success" id="addCertificationModalLabel">Add Certification</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCertificationForm" action="/candidate/add-certification" method="post">
+                    <div class="mb-1">
+                        <label for="add_certification_name" class="form-label text-primary">Certification Name:</label>
+                        <input type="text" class="form-control" id="add_certification_name" name="certification_name" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="add_certification_date" class="form-label text-primary">Date Awarded:</label>
+                        <input type="date" class="form-control" id="add_certification_date" name="date_awarded" required>
+                    </div>                   
+                    <div class="mb-1">
+                        <label for="add_certification_description" class="form-label text-primary">Description:</label>
+                        <textarea class="form-control" id="add_certification_description" name="description" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Certification</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+<script>
+    
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+ <script src="../../../static/js/candidate-profile.js"></script>  
+
+ <!-- PAGANATIONS -->
+ <script src="../../../static/js/candidateprofilepagantion.js"></script>
+ <script src="../../../static/js/candidate-work.js"></script>
+
+<script>
+ 
+    function editCertification(id, certification_name,date_awarded,description) {
+        document.getElementById('edit_certification_id').value = id;
+        document.getElementById('edit_certification_name').value = certification_name;
+        document.getElementById('edit_certification_date').value = date_awarded;
+        document.getElementById('edit_certification_description').value = description;
+        $('#editCertificationModal').modal('show');
+        
+    }
+
+    function editWorkExperience(id, company_name, job_title, from_date, to_date, description) {
+    document.getElementById('edit_work_experience_id').value = id;
+    document.getElementById('edit_company_name').value = company_name;
+    document.getElementById('edit_job_title').value = job_title;
+    document.getElementById('edit_from_date').value = from_date;
+    document.getElementById('edit_to_date').value = to_date;
+    document.getElementById('edit_description').value = description;
+    $('#editWorkExperienceModal').modal('show');
+}
+
+document.querySelectorAll('.delete-skill, .delete-softskill, .delete-language', ).forEach(button => {
+    button.addEventListener('click', function(event) {
+        if (!confirm('Are you sure you want to delete this item?')) {
+            event.preventDefault();
+        }
+    });
+});
+
+
+
+
+
+</script>

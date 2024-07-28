@@ -1,0 +1,17 @@
+<tr data-id="{{ work_experience.id }}">
+    <td>{{ work_experience.company_name }}</td>
+    <td>{{ work_experience.job_title }}</td>
+    <td>{{ work_experience.from_date }} </td>
+    <td>{{ work_experience.to_date }}</td>
+
+    <td>{{ work_experience.description }}</td>
+    <td>
+        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editWorkExperienceModal" 
+           onclick="editWorkExperience('{{ work_experience.id }}', '{{ work_experience.company_name }}', '{{ work_experience.job_title }}', '{{ work_experience.from_date }}', '{{ work_experience.to_date }}', '{{ work_experience.description }}')">
+            <i class="las la-edit me-2"></i>Edit
+        </a>
+        <form method="POST" action="/candidate/delete-work-experience/{{ work_experience.id }}" style="display:inline;">
+            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+        </form>
+    </td>
+</tr>
