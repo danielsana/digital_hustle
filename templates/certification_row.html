@@ -1,0 +1,13 @@
+<tr data-id="{{ certification.id }}">
+    <td>{{ certification.certification_name }}</td>
+    <td>{{ certification.date_awarded }}</td>
+    <td>{{ certification.description }}</td>
+    <td>
+        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editCertificationModal" onclick="editCertification('{{ certification.id }}', '{{ certification.certification_name }}', '{{ certification.date_awarded }}', '{{ certification.description }}')">
+            <i class="las la-edit me-2"></i>Edit
+        </a>
+        <form method="POST" action="/candidate/delete-certification/{{ certification.id }}" style="display:inline;">
+            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+        </form>
+    </td>
+</tr>

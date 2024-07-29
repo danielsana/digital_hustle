@@ -3,21 +3,22 @@
     <div class="page-row">
     <div class="page-title">
     <h3>
-    <a href="{{ url_for('candidate_profile') }}" class="edit-link">back</a>
+        <a href="/candidate/profile" class="btn btn-primary">
+            <i class="las la-chevron-left me-2"></i>Back 
+        </a>
     Profile / Upload Photo
     </h3>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="da-alert da-alert-{{ category }}" role="alert">
-    {{ message }}
-    <button type="button" class="da-close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-    </button>
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+      <small>
+        {% with messages = get_flashed_messages(with_categories=true) %} 
+            {% if messages %} 
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }}" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %} 
+            {% endif %} 
+        {% endwith %}
+    </small>
     </div>
     </div>
      
@@ -31,7 +32,8 @@
     <form action="{{ url_for('upload_photo') }}" method="POST" enctype="multipart/form-data">
     <label for="profile_pic">Choose a profile picture:</label>
     <input type="file" id="profile_pic" name="profile_pic">
-    <button type="submit" class="btn btn-blue">Upload</button>
+    <button type="submit" class="btn btn-primary las la-upload p-2">Upload</button>
+    
     </form>
      
     

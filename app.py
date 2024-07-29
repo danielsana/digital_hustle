@@ -351,61 +351,61 @@ def candidate_dashboard():
         return render_template('candidate/dashboard.html',categories=categories,locations=locations,jobTypes=jobType)
     else:
        return render_template('403.html')
+# NOT IN USE 
+# @app.route('/candidate/profile')
+# @login_required
+# def candidate_profile():
+#     if session['key'] == "candidate" :
+#         skills = get_skills()
+#         languages = get_languages()
+#         softskills = get_soft_skills()
+#         # User Profile
+#         connection = pymysql.connect(host='localhost', user='root', password='', database='hustle_db')
+#         sql2 = "SELECT * FROM candidates WHERE id = %s"
+#         cursor2 = connection.cursor()
+#         cursor2.execute(sql2, session['candidate_key'])
+#         candidate = cursor2.fetchone()
 
-@app.route('/candidate/profile')
-@login_required
-def candidate_profile():
-    if session['key'] == "candidate" :
-        skills = get_skills()
-        languages = get_languages()
-        softskills = get_soft_skills()
-        # User Profile
-        connection = pymysql.connect(host='localhost', user='root', password='', database='hustle_db')
-        sql2 = "SELECT * FROM candidates WHERE id = %s"
-        cursor2 = connection.cursor()
-        cursor2.execute(sql2, session['candidate_key'])
-        candidate = cursor2.fetchone()
+#         if candidate:
+#             session['fname'] = candidate[2]
+#             session['lname'] = candidate[3]
+#             session['surname'] = candidate[4]
+#             session['phone'] = candidate[5]
+#             session['title'] = candidate[9]
+#             session['gender'] = candidate[10]
+#             session['dob'] = candidate[11]
+#             session['national_id_no'] = candidate[12]
+#             session['address'] = candidate[13]
+#             session['bio'] = candidate[14]
+#             session['profile_pic'] = candidate[8]
 
-        if candidate:
-            session['fname'] = candidate[2]
-            session['lname'] = candidate[3]
-            session['surname'] = candidate[4]
-            session['phone'] = candidate[5]
-            session['title'] = candidate[9]
-            session['gender'] = candidate[10]
-            session['dob'] = candidate[11]
-            session['national_id_no'] = candidate[12]
-            session['address'] = candidate[13]
-            session['bio'] = candidate[14]
-            session['profile_pic'] = candidate[8]
+#         # Work experience 
+#         sql = "SELECT * FROM workexperiences WHERE candidate_id = %s"
+#         cursor = connection.cursor()
+#         cursor.execute(sql, session['candidate_key'])
+#         work_experience = cursor.fetchone()
 
-        # Work experience 
-        sql = "SELECT * FROM workexperiences WHERE candidate_id = %s"
-        cursor = connection.cursor()
-        cursor.execute(sql, session['candidate_key'])
-        work_experience = cursor.fetchone()
+#         if work_experience:
+#             session['company_name'] = work_experience[2]
+#             session['job_title'] = work_experience[3]
+#             session['from_date'] = work_experience[4]
+#             session['to_date'] = work_experience[5]
+#             session['description'] = work_experience[6]
 
-        if work_experience:
-            session['company_name'] = work_experience[2]
-            session['job_title'] = work_experience[3]
-            session['from_date'] = work_experience[4]
-            session['to_date'] = work_experience[5]
-            session['description'] = work_experience[6]
+#         # Certifications
+#         sql = "SELECT * FROM certifications WHERE candidate_id = %s"
+#         cursor1 = connection.cursor()
+#         cursor1.execute(sql, session['candidate_key'])
+#         certifications = cursor1.fetchone()
 
-        # Certifications
-        sql = "SELECT * FROM certifications WHERE candidate_id = %s"
-        cursor1 = connection.cursor()
-        cursor1.execute(sql, session['candidate_key'])
-        certifications = cursor1.fetchone()
+#         if certifications:
+#             session['certification_name'] = certifications[2]
+#             session['date_awarded'] = certifications[3]
+#             session['desc'] = certifications[4]        
 
-        if certifications:
-            session['certification_name'] = certifications[2]
-            session['date_awarded'] = certifications[3]
-            session['desc'] = certifications[4]        
-
-        return render_template('candidate/components/profile.html', skills = skills, softskills = softskills , languages = languages)
-    else:        
-       return render_template('403.html')
+#         return render_template('candidate/components/profile.html', skills = skills, softskills = softskills , languages = languages)
+#     else:        
+#        return render_template('403.html')
 
 @app.route('/company/dashboard')
 @login_required
@@ -743,42 +743,103 @@ def logout():
 def about():
     return render_template('about.html')
 
-# update bio
-@app.route('/candidate/update-bio',  methods = ['POST', 'GET'])
+# UPDATED VERSION OF CANDIDATE PROFILE 
+# CANDIDATE PROFILE   
+@app.route('/candidate/profile', methods=['POST', 'GET'])
 @login_required
-def update_bio():
-    if session['key'] == "candidate" :
-        if request.method == 'POST':
-            firstname = request.form['fname']
-            lastname = request.form['lname']
-            surname = request.form['surname']
-            phone = request.form['phone']
-            title = request.form['title']
-            gender = request.form['gender']
-            dob = request.form['dob']
-            national_id_no = request.form['national_id_no']
-            address = request.form['address']
-            bio = request.form['bio']
+def candidate_profile():
+    if session.get('key') != "candidate":
+        flash('Unauthorized access or session key not set correctly.', 'warning')
+        return redirect(url_for('home'))
 
-            connection = pymysql.connect(host='localhost', user='root',password='', database='hustle_db' )
-            cursor = connection.cursor()
+    candidate_id = session.get('candidate_key')
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
 
-            data = (firstname, lastname, surname, phone, title, gender, dob, national_id_no, address, bio,session['candidate_key'])
+    try:
+        # Fetch candidate profile and additional info
+        candidate_info = fetch_additional_info(cursor, candidate_id)
 
-            sql = "update candidates set fname = %s, lname = %s, surname = %s, phone = %s, professional_title = %s, gender = %s, dob = %s, national_id_no = %s, address = %s, bio = %s where id = %s"
-            cursor.execute(sql, data)
-            connection.commit()           
-            
+        return render_template('candidate/profile.html', profile=candidate_info['candidate_pro'],
+                               technical_skills=candidate_info['technical_skills'],
+                               soft_skills=candidate_info['soft_skills'],
+                               languages=candidate_info['languages'],
+                               work_experiences=candidate_info['work_experiences'],
+                               certifications=candidate_info['certifications'])
+    except Exception as e:
+        flash(f'An error occurred while fetching the profile: {str(e)}', 'danger')
+        return redirect(url_for('home'))
+    finally:
+        connection.close()
 
-            return render_template('candidate/components/profile.html', success = 'Bio Updated Successfully')
 
-        else:
-            return render_template('candidate/components/profile.html')
-            
-    else:
+
+# EDIT CANDIDATE PROFILE 
+@app.route('/candidate/edit-profile', methods=['POST', 'GET'])
+@login_required
+def update_profile():
+    if session.get('key') != "candidate":
         return render_template('403.html')
-    
 
+    candidate_id = session.get('candidate_key')
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+
+    if request.method == 'POST':
+        firstname = request.form['fname']
+        lastname = request.form['lname']
+        surname = request.form['surname']
+        phone = request.form['phone']
+        title = request.form['professional_title']
+        gender = request.form['gender']
+        dob = request.form['dob']
+        national_id_no = request.form['national_id_no']
+        address = request.form['address']
+        bio = request.form['bio']
+
+        data = (firstname, lastname, surname, phone, title, gender, dob, national_id_no, address, bio, candidate_id)
+
+        try:
+            sql = """
+                UPDATE candidates 
+                SET fname = %s, lname = %s, surname = %s, phone = %s, professional_title = %s, gender = %s, dob = %s, national_id_no = %s, address = %s, bio = %s 
+                WHERE id = %s
+            """
+            cursor.execute(sql, data)
+            connection.commit()
+            flash('Profile updated successfully', 'success')
+        except Exception as e:
+            connection.rollback()
+            flash(f'An error occurred: {str(e)}', 'danger')
+        finally:
+            connection.close()
+
+        return redirect(url_for('update_profile'))
+
+    else:
+        try:
+            # Fetch additional info
+            additional_info = fetch_additional_info(cursor, candidate_id)
+
+            return render_template('candidate/profile-edit.html',
+                                   
+                                profile=additional_info['candidate_pro'],
+                                skills=additional_info['technical_skills'],
+                                softskills=additional_info['soft_skills'],
+                                languages=additional_info['languages'],
+                                unselected_skills=additional_info['unselected_skills'],
+                                unselected_soft_skills=additional_info['unselected_soft_skills'],
+                                unselected_languages=additional_info['unselected_languages'],
+                                work_experiences=additional_info['work_experiences'],
+                                certifications=additional_info['certifications'])
+
+        except Exception as e:
+            flash(f'An error occurred while fetching the profile: {str(e)}', 'danger')
+            return redirect(url_for('home'))
+        finally:
+            connection.close()
+
+# UPLOAD PHOTO
 @app.route('/candidate/upload-photo', methods=['GET', 'POST'])
 @login_required
 def upload_photo():
@@ -802,120 +863,469 @@ def upload_photo():
                 cursor.execute(sql, (filename,session['candidate_key']))
                 connection.commit()
 
-                flash('Profile picture updated successfully!')
-                return redirect(url_for('candidate_profile'))
+                flash('Profile picture updated successfully!', 'success')
+                return redirect(url_for('update_profile'))
         return render_template('candidate/profile-pic-upload.html')
     else:
         return render_template('403.html')
-  
+    
 
-@app.route('/candidate/update-certifications', methods=['GET', 'POST'])
+# UPLOAD CANDIDATE CV UPLOAD
+@app.route('/candidate/upload-cv', methods=['POST', 'GET'])
 @login_required
-def update_work_experience():
-    if session['key'] == "candidate" :
-        
+def upload_cv():
+    if session.get('key') == "candidate":
         if request.method == 'POST':
-            
+            cv_file = request.files.get('cv_upload')
+            if cv_file and cv_file.filename:
+                filename = secure_filename(cv_file.filename)
+                cv_path = os.path.join('static/cv_files', filename)
+
+                try:
+                    connection = pymysql.connect(**db_config)
+                    cursor = connection.cursor()
+
+                    # Retrieve the current CV file path
+                    sql = "SELECT cv_upload FROM candidates WHERE id = %s"
+                    cursor.execute(sql, (session.get('candidate_key'),))
+                    old_cv = cursor.fetchone()
+
+                    # Save the new CV file
+                    cv_file.save(cv_path)
+
+                    # Update the candidate's CV path in the database
+                    sql = "UPDATE candidates SET cv_upload = %s WHERE id = %s"
+                    cursor.execute(sql, (filename, session.get('candidate_key')))
+                    connection.commit()
+
+                    # Delete the old CV file
+                    if old_cv and old_cv[0]:
+                        old_cv_path = os.path.join('static/cv_files', old_cv[0])
+                        if os.path.exists(old_cv_path):
+                            os.remove(old_cv_path)
+
+                    flash('CV uploaded successfully!', 'success')
+                except Exception as e:
+                    connection.rollback()
+                    flash(f'An error occurred: {str(e)}', 'danger')
+                finally:
+                    connection.close()
+                
+                return redirect(url_for('update_profile'))
+            else:
+                flash('No CV file selected.', 'danger')
+        
+        return render_template('candidate/profile-cv-upload.html')
+    else:
+        return render_template('403.html')
+    
+
+# ADD CANDIDATE SOFT SKILLS
+@app.route('/candidate/add-soft-skill', methods=['POST'])
+@login_required
+def add_soft_skill():
+    if session.get('key') != "candidate":
+        return render_template('403.html')
+    
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor()
+    candidate_id = session.get('candidate_key')
+
+    try:
+        # Get the selected soft skills from the form
+        selected_soft_skills = request.form.getlist('soft_skills[]')
+
+        if not selected_soft_skills:
+            flash('No soft skills selected', 'danger')
+            return redirect(url_for('update_profile'))
+
+        # Filter out any invalid or empty values
+        valid_soft_skills = [int(skill_id) for skill_id in selected_soft_skills if skill_id.isdigit()]
+
+        if not valid_soft_skills:
+            flash('Invalid soft skills selected', 'danger')
+            return redirect(url_for('update_profile'))
+
+        # Insert the selected soft skills into the database
+        softskills_sql = 'INSERT INTO candidates_softskills (candidate_id, softskill_id) VALUES (%s, %s)'
+        for soft_skill_id in valid_soft_skills:
+            cursor.execute(softskills_sql, (candidate_id, soft_skill_id))
+        
+        connection.commit()
+        flash('Soft skills added successfully', 'success')
+
+    except Exception as e:
+        connection.rollback()
+        flash(f'An error occurred: {str(e)}', 'danger')
+
+    finally:
+        connection.close()
+
+    return redirect(url_for('update_profile'))
+
+# ADD CANDIDATE TECHNICAL SKILLS
+@app.route('/candidate/add-technical-skill', methods=['POST'])
+@login_required
+def add_technical_skill():
+    if session.get('key') != "candidate":
+        return render_template('403.html')
+    
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor()
+    candidate_id = session.get('candidate_key')
+
+    try:
+        # Get the selected technical skills from the form
+        selected_technical_skills = request.form.getlist('technical_skills[]')
+
+        if not selected_technical_skills:
+            flash('No technical skills selected', 'danger')
+            return redirect(url_for('update_profile'))
+
+        # Filter out any invalid or empty values
+        valid_technical_skills = [int(skill_id) for skill_id in selected_technical_skills if skill_id.isdigit()]
+
+        if not valid_technical_skills:
+            flash('Invalid technical skills selected', 'danger')
+            return redirect(url_for('update_profile'))
+
+        # Insert the selected technical skills into the database
+        technicalskills_sql = 'INSERT INTO candidates_technicalskills (candidate_id, skill_id) VALUES (%s, %s)'
+        for technical_skill_id in valid_technical_skills:
+            cursor.execute(technicalskills_sql, (candidate_id, technical_skill_id))
+        
+        connection.commit()
+        flash('Technical skills added successfully', 'success')
+
+    except Exception as e:
+        connection.rollback()
+        flash(f'An error occurred: {str(e)}', 'danger')
+
+    finally:
+        connection.close()
+
+    return redirect(url_for('update_profile'))
+
+# ADD CANDIDATE LANGUAGES
+@app.route('/candidate/add-language', methods=['POST'])
+@login_required
+def add_language():
+    if session.get('key') != "candidate":
+        return render_template('403.html')
+    
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor()
+    candidate_id = session.get('candidate_key')
+
+    try:
+        # Get the selected languages from the form
+        selected_languages = request.form.getlist('languages[]')
+
+        if not selected_languages:
+            flash('No languages selected', 'danger')
+            return redirect(url_for('update_profile'))
+
+        # Filter out any invalid or empty values
+        valid_languages = [int(language_id) for language_id in selected_languages if language_id.isdigit()]
+
+        if not valid_languages:
+            flash('Invalid languages selected', 'danger')
+            return redirect(url_for('update_profile'))
+
+        # Insert the selected languages into the database
+        languages_sql = 'INSERT INTO candidates_languages (candidate_id, language_id) VALUES (%s, %s)'
+        for language_id in valid_languages:
+            cursor.execute(languages_sql, (candidate_id, language_id))
+        
+        connection.commit()
+        flash('Languages added successfully', 'success')
+
+    except Exception as e:
+        connection.rollback()
+        flash(f'An error occurred: {str(e)}', 'danger')
+
+    finally:
+        connection.close()
+
+    return redirect(url_for('update_profile'))
+
+
+
+# ADD CANDIDATE CERTIFICATION
+@app.route('/candidate/add-certification', methods=['POST'])
+@login_required
+def add_certification():
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    if session['key'] == "candidate":
+        if request.method == 'POST':
             certification_name = request.form['certification_name']
             date_awarded = request.form['date_awarded']
             description = request.form['description']
 
-            connection = pymysql.connect(host='localhost', user='root',password='', database='hustle_db' )
-            cursor = connection.cursor()
-
-            data = (session['candidate_key'], certification_name, date_awarded, description,session['candidate_key'])
-
-            sql = "update certifications set candidate_id = %s, certification_name = %s, date_awarded = %s, description = %s  where candidate_id = %s"
+            data = (session['candidate_key'], certification_name, date_awarded, description)
+            sql = "INSERT INTO certifications (candidate_id, certification_name, date_awarded, description) VALUES (%s, %s, %s, %s)"
             cursor.execute(sql, data)
             connection.commit()
 
-            return render_template('candidate/components/profile.html', success = 'certifications Updated Successfully')
+            flash('Certification added successfully', 'success')
+            return redirect(url_for('update_profile'))
 
-        else:
-            return render_template('candidate/components/profile.html')
+    else:
+        return render_template('403.html')
     
+# GET CANDIDATE CERTIFICATIONS
+@app.route('/candidate/get-certifications', methods=['POST'])
+@login_required
+def get_certifications():
+    current_page = int(request.form['currentPage'])
+    items_per_page = int(request.form['itemsPerPage'])
+    candidate_id = session.get('candidate_key')
+
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+
+    sql = "SELECT * FROM certifications WHERE candidate_id = %s LIMIT %s OFFSET %s"
+    cursor.execute(sql, (candidate_id, items_per_page, (current_page - 1) * items_per_page))
+    certifications = cursor.fetchall()
+
+    cursor.execute("SELECT COUNT(*) as total FROM certifications WHERE candidate_id = %s", (candidate_id,))
+    total_certifications = cursor.fetchone()['total']
+    total_pages = (total_certifications + items_per_page - 1) // items_per_page
+
+    htmlresponse = ""
+    for certification in certifications:
+        htmlresponse += render_template('certification_row.html', certification=certification)
+
+    return jsonify({
+        'htmlresponse': htmlresponse,
+        'currentPage': current_page,
+        'total': total_certifications,
+        'totalPages': total_pages
+    })
+ 
+
+# UPDATE CANDIDATE CERTIFICATION
+@app.route('/candidate/update-certifications', methods=['POST'])
+@login_required
+def update_certification():
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    if session['key'] == "candidate":
+        if request.method == 'POST':
+            certification_id = request.form['id']
+            certification_name = request.form['certification_name']
+            date_awarded = request.form['date_awarded']
+            description = request.form['description']
+
+            data = (certification_name, date_awarded, description, certification_id)
+            sql = "UPDATE certifications SET certification_name = %s, date_awarded = %s, description = %s WHERE id = %s AND candidate_id = %s"
+            cursor.execute(sql, data + (session['candidate_key'],))
+            connection.commit()
+
+            flash('Certification updated successfully', 'success')
+            return redirect(url_for('update_profile'))
+
     else:
         return render_template('403.html')
 
-@app.route('/candidate/update-work-experience', methods=['GET', 'POST'])
+
+    
+# DELETE CANDIDATE CERTIFICATION
+@app.route('/candidate/delete-certification/<int:id>', methods=['POST'])
 @login_required
-def update_certifications():
-    if session['key'] == "candidate" :        
-        if request.method == 'POST':            
+def delete_certification(id):
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    if session['key'] == "candidate":
+        sql = "DELETE FROM certifications WHERE id = %s"
+        cursor.execute(sql, (id))
+        connection.commit()
+        flash('Certification deleted successfully', 'success')
+        return redirect(url_for('update_profile'))
+    else:
+        return render_template('403.html')
+    
+# GET CANDIDATE WORK EXPERIENCE
+@app.route('/candidate/get-work-experience', methods=['POST'])
+@login_required
+def get_work_experience():
+    current_page = int(request.form['currentPage'])
+    items_per_page = int(request.form['itemsPerPage'])
+    candidate_id = session.get('candidate_key')
+
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+
+    sql = "SELECT * FROM workexperiences WHERE candidate_id = %s LIMIT %s OFFSET %s"
+    cursor.execute(sql, (candidate_id, items_per_page, (current_page - 1) * items_per_page))
+    work_experiences = cursor.fetchall()
+
+    cursor.execute("SELECT COUNT(*) as total FROM workexperiences WHERE candidate_id = %s", (candidate_id,))
+    total_work_experiences = cursor.fetchone()['total']
+    total_pages = (total_work_experiences + items_per_page - 1) // items_per_page
+
+    htmlresponse = ""
+    for work_experience in work_experiences:
+        htmlresponse += render_template('work_experience_row.html', work_experience=work_experience)
+
+    return jsonify({
+        'htmlresponse': htmlresponse,
+        'currentPage': current_page,
+        'total': total_work_experiences,
+        'totalPages': total_pages
+    })
+
+
+
+
+# ADD CANDIDATE WORK EXPERIENCE
+@app.route('/candidate/add-work-experience', methods=['POST'])
+@login_required
+def add_work_experience():
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    if session['key'] == "candidate":
+        if request.method == 'POST':
             company_name = request.form['company_name']
             job_title = request.form['job_title']
             from_date = request.form['from_date']
             to_date = request.form['to_date']
             description = request.form['description']
-            connection = pymysql.connect(host='localhost', user='root',password='', database='hustle_db' )
-            cursor = connection.cursor()
-            data = (session['candidate_key'], company_name, job_title, from_date, to_date, description,session['candidate_key'])
 
-            sql = "update workexperiences set candidate_id = %s, company_name = %s, job_title = %s, from_date = %s, to_date = %s, description = %s  where candidate_id = %s"
+            data = (session['candidate_key'], company_name, job_title, from_date, to_date, description)
+            sql = "INSERT INTO workexperiences (candidate_id, company_name, job_title, from_date, to_date, description) VALUES (%s, %s, %s, %s, %s, %s)"
             cursor.execute(sql, data)
             connection.commit()
 
-            return render_template('candidate/components/profile.html', success = 'workexperiences Updated Successfully')
+            flash('Work experience added successfully', 'success')
+            return redirect(url_for('update_profile'))
 
-        else:
-            return render_template('candidate/components/profile.html')
-    else:
-        return render_template('403.html') 
-
-@app.route('/candidate/update-skills-attributes', methods=['POST', 'GET'])
-@login_required
-def updateCandidateSkills():
-    if session['key'] == "candidate" :
-        skills = get_skills()
-        languages = get_languages()
-        softskills = get_soft_skills()
-        
-        connection = pymysql.connect(**db_config)
-        cursor = connection.cursor()
-        if request.method == 'POST':
-            technical_skills = request.form.getlist('technical_skills[]')
-            soft_skills = request.form.getlist('soft_skills[]')
-            languages = request.form.getlist('languages[]')
-
-            if len(technical_skills) <= 0:
-                return render_template('candidate/components/profile.html', error='Technical skills cannot be empty')
-            if len(soft_skills) <= 0:
-                return render_template('candidate/components/profile.html', error='Soft skills cannot be empty')
-            if len(languages) <= 0:
-                return render_template('candidate/components/profile.html', error='Languages cannot be empty')
-
-            # Assuming candidate ID is stored in session
-            candidate_id = session.get('key')
-            if not candidate_id:
-                return render_template('candidate/components/profile.html', error='Candidate ID not found in session')
-
-            technical_sql = 'INSERT INTO candidates_technicalskills (candidate_id, skill_id) VALUES (%s, %s)'
-            softskills_sql = 'INSERT INTO candidates_softskills (candidate_id, softskill_id) VALUES (%s, %s)'
-            languages_sql = 'INSERT INTO candidates_languages (candidate_id, language_id) VALUES (%s, %s)'
-
-            try:
-                for skill_id in technical_skills:
-                    cursor.execute(technical_sql, (candidate_id, skill_id))
-                
-                for soft_skill_id in soft_skills:
-                    cursor.execute(softskills_sql, (candidate_id, soft_skill_id))
-
-                for language_id in languages:
-                    cursor.execute(languages_sql, (candidate_id, language_id))
-                
-                connection.commit()
-                return render_template('candidate/components/profile.html', skills = skills, softskills = softskills , languages = languages, success='Skills updated successfully')
-
-            
-            except Exception as e:
-                connection.rollback()
-                
-                return render_template('candidate/components/profile.html', skills = skills, softskills = softskills , languages = languages, error=str(e))
-                
-        else:
-            return render_template('candidate/components/profile.html')
     else:
         return render_template('403.html')
+    
+# UPDATE CANDIDATE WORK EXPERIENCE
+@app.route('/candidate/update-work-experience', methods=['POST'])
+@login_required
+def update_work_experience():
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    if session['key'] == "candidate":
+        if request.method == 'POST':
+            work_experience_id = request.form['id']
+            company_name = request.form['company_name']
+            job_title = request.form['job_title']
+            from_date = request.form['from_date']
+            to_date = request.form['to_date']
+            description = request.form['description']
+
+            data = (company_name, job_title, from_date, to_date, description, work_experience_id)
+            sql = "UPDATE workexperiences SET company_name = %s, job_title = %s, from_date = %s, to_date = %s, description = %s WHERE id = %s AND candidate_id = %s"
+            cursor.execute(sql, data + (session['candidate_key'],))
+            connection.commit()
+
+            flash('Work experience updated successfully', 'success')
+            return redirect(url_for('update_profile'))
+
+    else:
+        return render_template('403.html')
+
+# DELETE CANDIDATE WORK EXPERIENCE
+@app.route('/candidate/delete-work-experience/<int:id>', methods=['POST'])
+@login_required
+def delete_work_experience(id):
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    if session['key'] == "candidate":
+        sql = "DELETE FROM workexperiences WHERE id = %s"
+        cursor.execute(sql, (id))
+        connection.commit()
+        flash('Work experience deleted successfully', 'success')
+        return redirect(url_for('update_profile'))
+    else:
+        return render_template('403.html')
+
+ 
+# DELETE CANDIDATE TECHNICAL SKILLS
+@app.route('/candidate/delete-skill/<int:skill_id>', methods=['POST'])
+@login_required
+def delete_technical_skill(skill_id):
+    if session.get('key') != "candidate":
+        return render_template('403.html')
+
+    candidate_id = session.get('candidate_key')
+
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor()
+
+    try:
+        sql = 'DELETE FROM candidates_technicalskills WHERE candidate_id=%s AND skill_id=%s'
+        cursor.execute(sql, (candidate_id, skill_id))
+        connection.commit()
+        flash('Technical skill deleted successfully', 'success')
+    except Exception as e:
+        connection.rollback()
+        flash(f'An error occurred: {str(e)}', 'danger')
+    finally:
+        cursor.close()
+        connection.close()
+
+    return redirect(url_for('update_profile'))
+
+# DELETE CANDIDATE SOFT SKILLS
+@app.route('/candidate/delete-softskill/<int:softskill_id>', methods=['POST'])
+@login_required
+def delete_soft_skill(softskill_id):
+    if session.get('key') != "candidate":
+        return render_template('403.html')
+
+    candidate_id = session.get('candidate_key')
+
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor()
+
+    try:
+        sql = 'DELETE FROM candidates_softskills WHERE candidate_id=%s AND softskill_id=%s'
+        cursor.execute(sql, (candidate_id, softskill_id))
+        connection.commit()
+        flash('Soft skill deleted successfully', 'success')
+    except Exception as e:
+        connection.rollback()
+        flash(f'An error occurred: {str(e)}', 'danger')
+    finally:
+        cursor.close()
+        connection.close()
+
+    return redirect(url_for('update_profile'))
+
+
+
+# DELETE CANDIDATE LANGUAGES
+@app.route('/candidate/delete-language/<int:language_id>', methods=['POST'])
+@login_required
+def delete_language(language_id):
+    if session.get('key') != "candidate":
+        return render_template('403.html')
+
+    candidate_id = session.get('candidate_key')
+
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor()
+
+    try:
+        sql = 'DELETE FROM candidates_languages WHERE candidate_id=%s AND language_id=%s'
+        cursor.execute(sql, (candidate_id, language_id))
+        connection.commit()
+        flash('Language deleted successfully', 'success')
+    except Exception as e:
+        connection.rollback()
+        flash(f'An error occurred: {str(e)}', 'danger')
+    finally:
+        cursor.close()
+        connection.close()
+
+    return redirect(url_for('update_profile'))
+
 
 if __name__ == '__main__':
     app.debug = True
