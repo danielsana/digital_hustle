@@ -1,5 +1,17 @@
 <!-- <h5 style="color: #007CAD;">{{ postedjobs|length }} Job(s) Found</h5> -->
  <!-- <h5 style="color: #007CAD;">Jobs on Digital Age Hustler</h5> -->
+    <link
+    rel="stylesheet"
+    href="../../../static/css/line-awesome/css/line-awesome.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../../../static/js/bootstrap.js"></script>
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
  <style>
 
 .featured-result-pagination {
@@ -30,15 +42,15 @@
 }
  </style>
  <div class="row">
+    
     {% if postedjobs %}
     {% for job in postedjobs %}
         <div class="col-md-4 mt-3">
-        
             <div class="card shadow p-3">
                 <div class="search-result-card">
                     <div class="search-result-card-header">
                         <div class="search-result-card-header-left">
-                            <span>{{job[3]}}</span>
+                            <span>{{job[4]}}</span>
                             <span>{{job[2]}}</span>
                             <span>{{job[0]}}</span>
                         </div>
@@ -49,8 +61,12 @@
                         </div>
                     </div>
                  
-                    <div class="text-center">
-                        <a href="#" class="btn btn-blue2">View</a>
+                    <div class="">
+                        <a href="#" class="btn btn-blue2 details-job-btn" 
+                        title="Details"
+                        data-toggle="modal"
+                        data-target="#detailsModal"
+                        data-job-id="{{job[3]}}">View Details</a>
                     </div>
                 </div>
             </div>
@@ -77,3 +93,104 @@
         </div>
     </div>
 </div>
+
+
+
+  <!-- Details Modal -->
+  <div
+    class="modal fade"
+    id="detailsModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="detailsModalTitle"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="profile text-center" >
+            <div class="avatar">
+              <!-- <img
+           src="../../../static/img/hero_right_02.jpg"
+           alt="Circle Image"
+           class="img-raised rounded-circle img-fluid"
+         /> -->
+            </div>
+            <div class="name">
+              <h3 class="title fw-bold" id="jobTitle" style="color: #2b4b83">
+                Job Title
+              </h3>
+              <h6 id="jobType" class="text-muted"></h6>
+              <h6 id="jobSkills" class="text-muted"></h6>
+              <h6 id="jobLocation" class="text-muted"></h6>
+              <h6 id="jobSalary" class="text-muted"></h6>
+              <h6 id="jobDate" class="text-muted"></h6>
+            </div>
+          </div>
+
+          <div class="description text-center">
+            <h5 class="fw-bold pt-2">Job Summary</h5>
+            <p id="jobDescription" class="text-muted"></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+
+            <a id="jobIdbtn"
+          >
+            
+        </a>
+            
+          <button
+            type="button"
+            class="btn btn-danger"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // details of jobs JS
+    $(".details-job-btn").on("click", function () {
+        var jobId = $(this).data("job-id");
+        console.log(jobId)
+        $.ajax({
+          url: "/company/editjob/" + jobId,
+          method: "GET",
+          success: function (data) {
+            $("#jobTitle").text(data.job_title);
+            $("#jobType").html(
+              '<i class="fa-solid fa-briefcase" style="color: #2b4b83"></i> &nbsp; Job type: ' +
+                data.jobtype_name
+            );
+            $("#jobSkills").html(
+              '<i class="fa-solid fa-list-check" style="color: #2b4b83"></i> &nbsp; Skills: ' +
+                data.job_skills.join(", ")
+            );
+            $("#jobLocation").html(
+              '<i class="fa-solid fa-building" style="color: #2b4b83"></i> &nbsp; Location: ' +
+                data.job_location_name
+            );
+            $("#jobSalary").html(
+              '<i class="fa-solid fa-wallet" style="color: #2b4b83"></i> &nbsp; Salary: ' +
+                data.salary_range_name
+            );
+            $("#jobDate").html(
+              '<i class="fa-solid fa-calendar-days" style="color: #2b4b83"></i> &nbsp; Date: ' +
+                data.date
+            );
+            $("#jobIdbtn").html(
+              ' <a  href="/candidate/applyjob/'+jobId +'" class="btn btn-primary" > Apply Now </a>'
+            );
+
+           
+            $("#jobDescription").text(data.job_description);
+            $("#detailsModal").modal("show");
+          },
+        });
+      });
+  </script>

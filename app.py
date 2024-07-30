@@ -633,10 +633,25 @@ def job_applicants(job_id):
     else:
             return render_template('403.html')
 
+#geting job applicants
+@app.route('/candidate/applyjob/<int:job_id>')
+@login_required
+def apply_job(job_id):
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor()
+    if session['key'] == "candidate" : 
+        cadidate_id=session['candidate_key']
+        sql='insert into postedjobs_candidates(postedjob_id,candidate_id) values (%s,%s)'
+        cursor.execute(sql,(job_id,cadidate_id))
+        connection.commit()
+        flash("Job Applied Successfully", 'success')
+        return redirect(url_for('candidate_dashboard'))
+    else:
+        return render_template('403.html')
 
 #fetching data for editing jobs 
 @app.route('/company/editjob/<int:job_id>', methods=['GET'])
-@login_required
+
 def edit_job(job_id):
     connection = pymysql.connect(**db_config)
     cursor = connection.cursor()
