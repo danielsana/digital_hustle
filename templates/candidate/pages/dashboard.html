@@ -57,6 +57,19 @@
             </div>
         </div>
     </div>
+    <small class="col-md-12" id="flashMessage">
+        {% with messages = get_flashed_messages(with_categories=true) %} 
+          {% if messages %} 
+            {% for category, message in messages %}
+            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }}" role="alert">
+                {{message}}
+                <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %} 
+          {% endif %} 
+        {% endwith %}
+      </small>
+      
 
 
     <div class="da-row">
@@ -86,3 +99,14 @@
 
 </div>
 
+<script> 
+// Function to hide the flash message 
+function dismissFlashMessage() { 
+    var flashMessage = document.getElementById('flashMessage'); 
+    if (flashMessage) { 
+        flashMessage.style.display = 'none'; 
+    } 
+} 
+// Set a timeout to dismiss the flash message after 10 seconds (10000 milliseconds) 
+setTimeout(dismissFlashMessage, 10000); 
+</script>

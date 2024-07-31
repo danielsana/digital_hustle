@@ -84,7 +84,7 @@ def get_featured_jobs(job_title=None, location=None, job_type=None, salary_range
     cursor = connection.cursor()
 
     query = """
-    SELECT companies.company_name, companies.company_logo, postedjobs.job_title,
+    SELECT companies.company_name, companies.company_logo, postedjobs.job_title,postedjobs.id,
       CASE 
         WHEN TIMESTAMPDIFF(MINUTE, postedjobs.updated_at, NOW()) < 60 THEN CONCAT(TIMESTAMPDIFF(MINUTE, postedjobs.updated_at, NOW()), ' Min Ago')
         WHEN TIMESTAMPDIFF(HOUR, postedjobs.updated_at, NOW()) < 24 THEN CONCAT(TIMESTAMPDIFF(HOUR, postedjobs.updated_at, NOW()), ' Hrs Ago')

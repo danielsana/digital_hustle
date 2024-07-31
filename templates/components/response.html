@@ -4,15 +4,15 @@
     <div class="featured-result-box-wrapper">
         {% if postedjobs %}
         {% for job in postedjobs %}
-        <div class="job_item ">
-            <a class="featured-result-item mb-3" href="#">
+        <div class="job_item overlay">
+            <div class="featured-result-item mb-3 overlay">
                 <div class="company-logo-area">
                     <div class="company-logo">
                         <img src="../../static/company_logos/{{job[1]}}" alt="" class="company-logo-img">
                     </div>
                 </div>
                 <div class="job-details-area">
-                    <span class="job-details-upload-time">{{job[3]}}</span>
+                    <span class="job-details-upload-time">{{job[4]}}</span>
                     <div class="job-details-title text-blue2">
                         <span>{{ job[2] }}</span>
                     </div>
@@ -20,16 +20,25 @@
                         <span>{{ job[0] }}</span>
                     </div>
                     <div class="job-details-type">
-                        <span>{{ job[4] }}</span>
-                    </div>
-                    <div class="job-details-location">
                         <span>{{ job[5] }}</span>
                     </div>
-                    <div class="job-details-skill-list">
-                        <p>{{ job[6] }}</p>
+                    <div class="job-details-location">
+                        <span>{{ job[6] }}</span>
                     </div>
+                    <div class="job-details-skill-list">
+                        <p>{{ job[7] }}</p>
+                    </div>
+                    <div class="">
+                        <a href="#" class="btn btn-outline-dark details-job-btn" 
+                        title="Details"
+                        data-toggle="modal"
+                        data-target="#detailsModal"
+                        data-job-id="{{job[3]}}">View Details</a>
+                    </div>
+                    
                 </div>
-            </a>
+            </div>
+            
         </div>
         {% endfor %}
         
@@ -52,3 +61,107 @@
         </div>
     </div>
 </div>
+
+
+
+  <!-- Details Modal -->
+  <div
+    class="modal fade"
+    id="detailsModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="detailsModalTitle"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="profile text-center" >
+            <div class="avatar">
+              <!-- <img
+           src="../../../static/img/hero_right_02.jpg"
+           alt="Circle Image"
+           class="img-raised rounded-circle img-fluid"
+         /> -->
+            </div>
+            <div class="name">
+              <h3 class="title fw-bold" id="jobTitle" style="color: #2b4b83">
+                Job Title
+              </h3>
+              <h6 id="jobType" class="text-muted"></h6>
+              <h6 id="jobSkills" class="text-muted"></h6>
+              <h6 id="jobLocation" class="text-muted"></h6>
+              <h6 id="jobSalary" class="text-muted"></h6>
+              <h6 id="jobDate" class="text-muted"></h6>
+            </div>
+          </div>
+
+          <div class="description text-center">
+            <h5 class="fw-bold pt-2">Job Summary</h5>
+            <p id="jobDescription" class="text-muted"></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+            {% if 'key' in session %}
+                    {% if session['key'] == 'candidate' %}
+                        <a id="jobIdbtn">{{ session['candidate'] }}</a>
+                        {% else %}
+                            <a class=" btn btn-warning text-primary">Only Candidates can Apply for Jobs</a>
+                    {% endif %}
+            {% else %}
+                <a class="btn btn-secondary" href="{{ url_for('candidateLogin') }}">Login as Candidate</a>
+            {% endif %}
+          <button
+            type="button"
+            class="btn btn-danger"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // details of jobs JS
+    $(".details-job-btn").on("click", function () {
+        var jobId = $(this).data("job-id");
+        console.log(jobId)
+        $.ajax({
+          url: "/company/editjob/" + jobId,
+          method: "GET",
+          success: function (data) {
+            $("#jobTitle").text(data.job_title);
+            $("#jobType").html(
+              '<i class="fa-solid fa-briefcase" style="color: #2b4b83"></i> &nbsp; Job type: ' +
+                data.jobtype_name
+            );
+            $("#jobSkills").html(
+              '<i class="fa-solid fa-list-check" style="color: #2b4b83"></i> &nbsp; Skills: ' +
+                data.job_skills.join(", ")
+            );
+            $("#jobLocation").html(
+              '<i class="fa-solid fa-building" style="color: #2b4b83"></i> &nbsp; Location: ' +
+                data.job_location_name
+            );
+            $("#jobSalary").html(
+              '<i class="fa-solid fa-wallet" style="color: #2b4b83"></i> &nbsp; Salary: ' +
+                data.salary_range_name
+            );
+            $("#jobDate").html(
+              '<i class="fa-solid fa-calendar-days" style="color: #2b4b83"></i> &nbsp; Date: ' +
+                data.date
+            );
+            $("#jobIdbtn").html(
+              ' <a  href="/candidate/applyjob/'+jobId +'" class="btn btn-primary" > Apply Now </a>'
+            );
+
+           
+            $("#jobDescription").text(data.job_description);
+            $("#detailsModal").modal("show");
+          },
+        });
+      });
+  </script>
