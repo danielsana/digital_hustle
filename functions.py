@@ -367,3 +367,103 @@ def get_applicants(job_id,professional_title=None):
     connection.commit()
     return applicants
 
+
+# FETCH CANDIDATE PROFILE INFO 
+def get_unselected_skills(cursor, candidate_id):
+    sql = '''
+        SELECT id, skill_name 
+        FROM skills 
+        WHERE id NOT IN (
+            SELECT skill_id FROM candidates_technicalskills WHERE candidate_id = %s
+        )
+    '''
+    cursor.execute(sql, (candidate_id,))
+    unselected_skills = cursor.fetchall()
+    return unselected_skills
+
+def get_unselected_soft_skills(cursor, candidate_id):
+    sql = '''
+        SELECT id, skill_name 
+        FROM soft_skills 
+        WHERE id NOT IN (
+            SELECT softskill_id FROM candidates_softskills WHERE candidate_id = %s
+        )
+    '''
+    cursor.execute(sql, (candidate_id,))
+    unselected_soft_skills = cursor.fetchall()
+    return unselected_soft_skills
+
+def get_unselected_languages(cursor, candidate_id):
+    sql = '''
+        SELECT id, language 
+        FROM languages 
+        WHERE id NOT IN (
+            SELECT language_id FROM candidates_languages WHERE candidate_id = %s
+        )
+    '''
+    cursor.execute(sql, (candidate_id,))
+    unselected_languages = cursor.fetchall()
+    return unselected_languages
+
+
+def fetch_additional_info(cursor, candidate_id):
+    # Fetch candidate profile
+    sql = 'SELECT * FROM candidates WHERE id=%s'
+    cursor.execute(sql, (candidate_id,))
+    candidate_pro = cursor.fetchone()
+
+    # Fetch skills and attributes
+    skills_sql = '''
+        SELECT skills.id, skills.skill_name
+        FROM candidates_technicalskills 
+        JOIN skills ON candidates_technicalskills.skill_id = skills.id 
+        WHERE candidates_technicalskills.candidate_id=%s
+    '''
+    softskills_sql  = '''
+        SELECT soft_skills.id, soft_skills.skill_name 
+        FROM candidates_softskills 
+        JOIN soft_skills ON candidates_softskills.softskill_id = soft_skills.id 
+        WHERE candidates_softskills.candidate_id=%s
+    '''
+    languages_sql =  '''
+        SELECT languages.id, languages.language
+        FROM candidates_languages 
+        JOIN languages ON candidates_languages.language_id = languages.id 
+        WHERE candidates_languages.candidate_id=%s
+    '''
+
+    cursor.execute(skills_sql, (candidate_id,))
+    technical_skills = cursor.fetchall()
+
+    cursor.execute(softskills_sql, (candidate_id,))
+    soft_skills = cursor.fetchall()
+
+    cursor.execute(languages_sql, (candidate_id,))
+    languages = cursor.fetchall()
+
+    # Fetch unselected skills, soft skills, and languages
+    unselected_skills = get_unselected_skills(cursor, candidate_id)
+    unselected_soft_skills = get_unselected_soft_skills(cursor, candidate_id)
+    unselected_languages = get_unselected_languages(cursor, candidate_id)
+
+    # Fetch work experiences
+    sql1 = 'SELECT * FROM workexperiences WHERE candidate_id=%s'
+    cursor.execute(sql1, (candidate_id,))
+    work_experiences = cursor.fetchall()
+
+    # Fetch certifications
+    sql2 = 'SELECT * FROM certifications WHERE candidate_id=%s'
+    cursor.execute(sql2, (candidate_id,))
+    certifications = cursor.fetchall()
+
+    return {
+        'candidate_pro': candidate_pro,
+        'technical_skills': technical_skills,
+        'soft_skills': soft_skills,
+        'languages': languages,
+        'unselected_skills': unselected_skills,
+        'unselected_soft_skills': unselected_soft_skills,
+        'unselected_languages': unselected_languages,
+        'work_experiences': work_experiences,
+        'certifications': certifications
+    }

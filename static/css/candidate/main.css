@@ -438,9 +438,15 @@ body{
     margin:10px 0;
     padding:10px;
 }
-.profile-bio-wrapper{
+/* THIS IS THE ORIGINAL I'VE COMMENT FOR NOW */
+/* .profile-bio-wrapper{
     display: flex;
     flex-direction: row;
+    column-gap: 1rem;
+} */
+.profile-bio-wrapper{
+    display: flex;
+    flex-direction: column;
     column-gap: 1rem;
 }
 .proflie-image-box{
