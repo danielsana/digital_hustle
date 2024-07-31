@@ -102,17 +102,13 @@
           </div>
         </div>
         <div class="modal-footer">
-
             {% if 'key' in session %}
                     {% if session['key'] == 'candidate' %}
-                        <!-- If the session is active and the user is a candidate -->
                         <a id="jobIdbtn">{{ session['candidate'] }}</a>
                         {% else %}
-                            <!-- If the session is active but the user is not a candidate -->
-                            <a>Can't apply</a>
+                            <a class=" btn btn-warning text-primary">Only Candidates can Apply for Jobs</a>
                     {% endif %}
             {% else %}
-                <!-- If there is no session or the user is not logged in -->
                 <a class="btn btn-secondary" href="{{ url_for('candidateLogin') }}">Login as Candidate</a>
             {% endif %}
           <button
