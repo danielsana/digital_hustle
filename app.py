@@ -330,7 +330,9 @@ def companyLogin():
                 session['company_key'] = company[1]            
                 session['id'] = company[0]   
                 session['company_email'] = company[2]  
-                session['key'] = "company"                         
+                session['company_logo_pic'] = company[3]
+                session['key'] = "company" 
+                                    
 
                 return redirect('/company/dashboard')
             else:
@@ -641,11 +643,17 @@ def apply_job(job_id):
     cursor = connection.cursor()
     if session['key'] == "candidate" : 
         cadidate_id=session['candidate_key']
-        sql='insert into postedjobs_candidates(postedjob_id,candidate_id) values (%s,%s)'
-        cursor.execute(sql,(job_id,cadidate_id))
-        connection.commit()
-        flash("Job Applied Successfully", 'success')
-        return redirect(url_for('candidate_dashboard'))
+        mysql = "select * from postedjobs_candidates where postedjob_id =%s and candidate_id=%s"
+        cursor.execute(mysql, (job_id,cadidate_id))
+        if cursor.rowcount == 0:
+            sql='insert into postedjobs_candidates(postedjob_id,candidate_id) values (%s,%s)'
+            cursor.execute(sql,(job_id,cadidate_id))
+            connection.commit()
+            flash("Job Applied Successfully", 'success')
+            return redirect(url_for('candidate_dashboard'))
+        else:
+            flash("You have already Applied for this Job", 'success')
+            return redirect(url_for('candidate_dashboard'))
     else:
         return render_template('403.html')
 

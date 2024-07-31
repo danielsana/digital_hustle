@@ -3,11 +3,14 @@
     <span>Welcome: {{session['key']}}</span>
 </div> -->
 
-{% include 'company/components/header.html' %} {% include
-'company/components/sidebar.html' %} {% include
-'company/components/panel-header.html' %} {% include
-'company/pages/post_jobs.html' %} {% include
-'company/components/panel-footer.html' %}
+{% include 'company/components/header.html' %} 
+
+<div class="row">
+    {% include 'company/components/sidebar.html' %}
+    {% include 'company/components/panel-header.html' %}
+    {% include 'company/pages/post_jobs.html' %} 
+</div>
+{% include 'company/components/panel-footer.html' %}
 <link rel="stylesheet" href="../../static/css/bootstrap.css" />
 <!-- <link
       rel="stylesheet"

@@ -2,10 +2,11 @@
     <span>Welcome: {{session['key']}}</span>
 </div> -->
 {% include 'company/components/header.html' %}
-{% include 'company/components/sidebar.html' %}
-{% include 'company/components/panel-header.html' %}
-{% include 'company/pages/company_profile.html' %}
-{% include 'company/components/panel-footer.html' %}
+<div class="row">
+    {% include 'company/components/sidebar.html' %}
+    {% include 'company/components/panel-header.html' %}
+    {% include 'company/pages/company_profile.html' %}
+</div>
 <link rel="stylesheet" href="../../static/css/bootstrap.css">
 {% include 'components/footer.html'%}
 
