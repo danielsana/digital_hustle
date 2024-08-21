@@ -136,7 +136,7 @@ body {
   font-size: 120%;
 }
 .sidebar-container {
-  max-width: 270px;
+  max-width: 328px;
   width: 50%;
   background-color: var(--blue-6);
   position: fixed;
@@ -322,8 +322,8 @@ body {
 }
 
 .content-container {
-  margin-left: 270px;
-  width: 100vw;
+  /* margin-left: 270px;
+  width: 100vw; */
 }
 .content-container-overlay {
   top: 0;

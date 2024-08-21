@@ -1,9 +1,10 @@
 <!-- <div class="topbar-container p-3">
     <span>Welcome: {{session['key']}}</span>
 </div> -->
-{% include 'company/components/header.html' %} {% include
-'company/components/sidebar.html' %} {% include
-'company/components/panel-header.html' %} {% include
-'company/pages/applications.html' %} {% include
-'company/components/panel-footer.html' %} {% include
-'company/components/footer.html' %}
+{% include 'company/components/header.html' %} 
+<div class="row">
+    {% include 'company/components/sidebar.html' %}
+    {% include 'company/components/panel-header.html' %}
+    {% include 'company/pages/applications.html' %} 
+</div>
+{% include 'company/components/footer.html' %}
