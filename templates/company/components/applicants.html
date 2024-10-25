@@ -1,3 +1,65 @@
+<style>
+  .candidate-profile-table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+  }
+
+  .candidate-profile-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .candidate-profile-table th,
+  .candidate-profile-table td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 2px solid #ddd;
+    vertical-align: top;
+  }
+
+  .candidate-profile-table th {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: blue;
+  }
+
+  .candidate-profile-table td {
+    font-size: 0.8rem;
+    color: var(--gray-1);
+  }
+
+  .inner-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .inner-table td {
+    border: 1px solid #ddd;
+    padding: 4px;
+    text-align: left;
+  }
+
+  /* profile bio wrapper */
+  .candidate-profile-bio-wrapper {
+    display: flex;
+    flex-direction: row;
+    column-gap: 1rem;
+  }
+  /* update profile button */
+  .btn-profile {
+    background: #065271;
+    color: aliceblue;
+    border-radius: 15px;
+    padding: 10px;
+    text-decoration: none;
+  }
+  .btn-profile:hover {
+    background-color: #297ce7;
+    color: white;
+  }
+</style>
+
 <div class="card-body text-center">
   <table class="table table-hover table-striped align-middle mb-0 bg-white">
     <thead class="bg-light">
@@ -37,13 +99,16 @@
         </td>
         <td>
           <div class="d-flex align-items-center">
-            <a
+            <button
               class="btn btn-link btn-sm btn-rounded details-job-btn"
               title="View Applicants"
-              href="/jobs/applicants/{{applicant[4]}}"
+              data-toggle="modal"
+              data-target="#addTechnicalSkillModal"
+              data-candidate-id="{{applicant[0]}}"
+              onclick="openCandidateModal('{{ applicant[0] }}')"
             >
               <i class="fas fa-eye"></i>
-            </a>
+            </button>
           </div>
         </td>
       </tr>
@@ -86,5 +151,466 @@
     </p>
   </div>
 </div>
+<!-- Modal HTML -->
+<div
+  class="modal fade"
+  id="candidateModal"
+  tabindex="-1"
+  aria-labelledby="candidateModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="candidateModalLabel">Candidate Details</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="mainTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="profile-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#profile"
+              type="button"
+              role="tab"
+              aria-controls="profile"
+              aria-selected="true"
+            >
+              Profile
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="skills-languages-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#skills-languages"
+              type="button"
+              role="tab"
+              aria-controls="skills-languages"
+              aria-selected="false"
+            >
+              Skills and Languages
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="work-experience-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#work-experience"
+              type="button"
+              role="tab"
+              aria-controls="work-experience"
+              aria-selected="false"
+            >
+              Work Experience
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="certifications-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#certifications"
+              type="button"
+              role="tab"
+              aria-controls="certifications"
+              aria-selected="false"
+            >
+              Certifications
+            </button>
+          </li>
+        </ul>
 
+        <!-- Tab content -->
+        <div class="tab-content mt-3" id="mainTabContent">
+          <!-- Profile Tab -->
+          <div
+            class="tab-pane fade show active"
+            id="profile"
+            role="tabpanel"
+            aria-labelledby="profile-tab"
+          >
+            <!-- Candidate Profile Data -->
+            <p id="candidateProfileContent"></p>
+          </div>
 
+          <!-- Skills and Languages Tab with Nested Tabs -->
+          <div
+            class="tab-pane fade"
+            id="skills-languages"
+            role="tabpanel"
+            aria-labelledby="skills-languages-tab"
+          >
+            <ul
+              class="nav nav-pills mb-3"
+              id="skillsLanguagesTab"
+              role="tablist"
+            >
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link active"
+                  id="technical-skills-tab"
+                  data-bs-toggle="pill"
+                  data-bs-target="#technical-skills"
+                  type="button"
+                  role="tab"
+                  aria-controls="technical-skills"
+                  aria-selected="true"
+                >
+                  Technical Skills
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="soft-skills-tab"
+                  data-bs-toggle="pill"
+                  data-bs-target="#soft-skills"
+                  type="button"
+                  role="tab"
+                  aria-controls="soft-skills"
+                  aria-selected="false"
+                >
+                  Soft Skills
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="languages-tab"
+                  data-bs-toggle="pill"
+                  data-bs-target="#languages"
+                  type="button"
+                  role="tab"
+                  aria-controls="languages"
+                  aria-selected="false"
+                >
+                  Languages
+                </button>
+              </li>
+            </ul>
+
+            <!-- Nested Tab Content -->
+            <div class="tab-content" id="skillsLanguagesTabContent">
+              <div
+                class="tab-pane fade show active"
+                id="technical-skills"
+                role="tabpanel"
+                aria-labelledby="technical-skills-tab"
+              >
+                <!-- Technical Skills Data -->
+                <p id="technicalSkillsContent"></p>
+              </div>
+              <div
+                class="tab-pane fade"
+                id="soft-skills"
+                role="tabpanel"
+                aria-labelledby="soft-skills-tab"
+              >
+                <!-- Soft Skills Data -->
+                <p id="softSkillsContent"></p>
+              </div>
+              <div
+                class="tab-pane fade"
+                id="languages"
+                role="tabpanel"
+                aria-labelledby="languages-tab"
+              >
+                <!-- Languages Data -->
+                <p id="languagesContent"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Work Experience Tab -->
+          <div
+            class="tab-pane fade"
+            id="work-experience"
+            role="tabpanel"
+            aria-labelledby="work-experience-tab"
+          >
+            <!-- Work Experience Data -->
+            <p id="workExperienceContent"></p>
+          </div>
+
+          <!-- Certifications Tab -->
+          <div
+            class="tab-pane fade"
+            id="certifications"
+            role="tabpanel"
+            aria-labelledby="certifications-tab"
+          >
+            <!-- Certifications Data -->
+            <p id="certificationsContent"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openCandidateModal(candidateId) {
+    // Open the modal
+    var candidateModal = new bootstrap.Modal(
+      document.getElementById("candidateModal")
+    );
+    candidateModal.show();
+
+    // Clear previous content
+    document.getElementById("candidateProfileContent").innerHTML = "";
+    document.getElementById("technicalSkillsContent").innerHTML = "";
+    document.getElementById("softSkillsContent").innerHTML = "";
+    document.getElementById("languagesContent").innerHTML = "";
+    document.getElementById("workExperienceContent").innerHTML = "";
+    document.getElementById("certificationsContent").innerHTML = "";
+
+    // Fetch candidate data via AJAX
+    fetch(`/candidate/profile/${candidateId}`, {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById("candidateProfileContent").innerHTML = `
+  <div class="page-own-content">
+  <div class="profile-bio-container">
+  <div class="candidate-profile-bio-wrapper">
+   
+  
+  <div class="profile-bio">
+  <h3 style=" font-size: 30px; display: flex; justify-content: space-between; align-items: center;">
+  ${data.candidate_pro.professional_title}. ${data.candidate_pro.fname} ${
+          data.candidate_pro.lname
+        }
+   
+  
+  </h3>
+   
+  
+  <p class="text-start">${data.candidate_pro.bio}</p>
+  </div>
+  </div>
+  </div>
+  
+   
+  
+  <div class="profile-bio-container">
+  <div class="profile-bio-wrapper">
+  <div class="profile-cv-upload">
+  <h4 class="text-start">Curriculum Vitae </h4>
+  <div class="d-flex align-items-center " >
+  ${
+    data.candidate_pro.cv_upload
+      ? `
+  <a href='' target="_blank">
+  <div class="profile-cv-box ">
+  <i class="las la-file-alt me-2" style="font-size: 30px;"></i>
+  
+  </div>
+  </a>
+  <p>${data.candidate_pro.cv_upload}</p>
+  `
+      : "<p>No CV uploaded</p>"
+  }
+  </div>
+  </div>
+  </div>
+  </div>
+  <div class="profile-bio-container">
+  <div class="candidate-profile-table-container">
+  <table class="candidate-profile-table">
+  <tr><th>Personal</th></tr>
+  <tr><td>Birthday:</td><td>${data.candidate_pro.dob}</td></tr>
+  <tr><td>Gender:</td><td>${data.candidate_pro.gender}</td></tr>
+  <tr><td>National ID No:</td><td>${data.candidate_pro.national_id_no}</td></tr>
+  <tr><th>Contacts</th></tr>
+  <tr><td>Phone:</td><td>${data.candidate_pro.phone}</td></tr>
+  <tr><td>Email:</td><td>${data.candidate_pro.email}</td></tr>
+  <tr><td>Address:</td><td>${data.candidate_pro.address}</td></tr>
+  </table>
+  </div>
+  </div>
+  </div>
+  `;
+
+        // Technical Skills
+        document.getElementById("technicalSkillsContent").innerHTML = `
+  <div class="profile-bio-container">
+  <div class="candidate-profile-table-container">
+  <table class="candidate-profile-table">
+  <thead>
+  <tr><th>Technical Skills</th></tr>
+  </thead>
+  <tbody>
+  ${
+    data.technical_skills.length
+      ? data.technical_skills
+          .map(
+            (skill) => `
+  <tr><td>${skill.skill_name}</td></tr>
+  `
+          )
+          .join("")
+      : `<tr><td>No technical skills added</td></tr>`
+  }
+  </tbody>
+  </table>
+  </div>
+  </div>
+  `;
+
+        // Soft Skills
+        document.getElementById("softSkillsContent").innerHTML = `
+  <div class="profile-bio-container">
+  <div class="candidate-profile-table-container">
+  <table class="candidate-profile-table">
+  <thead>
+  <tr><th>Soft Skills</th></tr>
+  </thead>
+  <tbody>
+  ${
+    data.soft_skills.length
+      ? data.soft_skills
+          .map(
+            (skill) => `
+  <tr><td>${skill.skill_name}</td></tr>
+  `
+          )
+          .join("")
+      : `<tr><td>No soft skills added</td></tr>`
+  }
+  </tbody>
+  </table>
+  </div>
+  </div>
+  `;
+
+        // Languages
+        document.getElementById("languagesContent").innerHTML = `
+  <div class="profile-bio-container">
+  <div class="candidate-profile-table-container">
+  <table class="candidate-profile-table">
+  <thead>
+  <tr><th>Languages</th></tr>
+  </thead>
+  <tbody>
+  ${
+    data.languages.length
+      ? data.languages
+          .map(
+            (lang) => `
+  <tr><td>${lang.language}</td></tr>
+  `
+          )
+          .join("")
+      : `<tr><td>No languages added</td></tr>`
+  }
+  </tbody>
+  </table>
+  </div>
+  </div>
+  `;
+
+        document.getElementById("workExperienceContent").innerHTML = `
+  <div class="profile-bio-container">
+  <div class="profile-bio-wrapper">
+   
+  
+  <div class="candidate-profile-table-container">
+  <table class="candidate-profile-table">
+  <thead>
+  <tr>
+  <th>Company Name</th>
+  <th>Job Title</th>
+  <th>From</th>
+  <th>To</th>
+  <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+  ${
+    data.work_experiences.length
+      ? data.work_experiences
+          .map(
+            (exp) => `
+  <tr>
+  <td>${exp.company_name}</td>
+  <td>${exp.job_title}</td>
+  <td>${exp.from_date}</td>
+  <td>${exp.to_date}</td>
+  <td>${exp.description}</td>
+  </tr>
+  `
+          )
+          .join("")
+      : `
+  <tr>
+  <td colspan="5">No work experience added</td>
+  </tr>`
+  }
+  </tbody>
+  </table>
+  </div>
+  </div>
+  </div>
+  `;
+        document.getElementById("certificationsContent").innerHTML = `
+  <div class="profile-bio-container">
+  <div class="profile-bio-wrapper">
+  
+  <div class="candidate-profile-table-container">
+  <table class="candidate-profile-table">
+  <thead>
+  <tr>
+  <th>Certification Name</th>
+  <th>Description</th>
+  <th>Issue Date</th>
+  </tr>
+  </thead>
+  <tbody>
+  ${
+    data.certifications.length
+      ? data.certifications
+          .map(
+            (cert) => `
+  <tr>
+  <td>${cert.certification_name}</td>
+  <td>${cert.description}</td>
+  <td>${cert.date_awarded}</td>
+  </tr>
+  `
+          )
+          .join("")
+      : `
+  <tr>
+  <td colspan="3">No certifications added</td>
+  </tr>`
+  }
+  </tbody>
+  </table>
+  </div>
+  </div>
+  </div>
+  `;
+      })
+      .catch((error) => {
+        console.error("Error fetching candidate data:", error);
+      });
+  }
+</script>

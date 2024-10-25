@@ -897,6 +897,29 @@ def update_profile():
             return redirect(url_for('home'))
         finally:
             connection.close()
+# EDIT CANDIDATE PROFILE BY ID
+@app.route('/candidate/profile/<int:candidate_id>', methods=['GET'])
+@login_required
+def candidate_profile_id(candidate_id):
+    if session.get('key') not in ["candidate", "company"]:
+        return jsonify({'error': 'Unauthorized access or session key not set correctly.'}), 403
+
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+
+    try:
+        candidate_info = fetch_additional_info(cursor, candidate_id)
+
+        if not candidate_info['candidate_pro']:
+            return jsonify({'error': 'Candidate not found.'}), 404
+
+        return jsonify(candidate_info)
+    except Exception as e:
+        return jsonify({'error': f'An error occurred while fetching the profile: {str(e)}'}), 500
+    finally:
+        connection.close()
+
+
 
 # UPLOAD PHOTO
 @app.route('/candidate/upload-photo', methods=['GET', 'POST'])
