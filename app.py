@@ -349,7 +349,7 @@ def candidate_dashboard():
         locations = get_locations()
         jobType = get_jobType()
         salaryRange = get_salaryRange()
-        return render_template('newCandidate/index.html',categories=categories,locations=locations,jobTypes=jobType)
+        return render_template('candidate/dashboard.html',categories=categories,locations=locations,jobTypes=jobType)
     else:
        return render_template('403.html')
 # NOT IN USE 
