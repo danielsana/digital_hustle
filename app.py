@@ -340,7 +340,6 @@ def companyLogin():
     else:
         return render_template('company/login.html', message = 'Login To Company Account')
     
-
 @app.route('/candidate/dashboard')
 @login_required
 def candidate_dashboard():
@@ -349,8 +348,7 @@ def candidate_dashboard():
         locations = get_locations()
         jobType = get_jobType()
         salaryRange = get_salaryRange()
-
-        return render_template('candidate/dashboard.html',categories=categories,locations=locations,jobTypes=jobType)
+        return render_template('newCandidate/index.html',categories=categories,locations=locations,jobTypes=jobType)
     else:
        return render_template('403.html')
 # NOT IN USE 
@@ -1411,4 +1409,4 @@ def delete_language(language_id):
 
 if __name__ == '__main__':
     app.debug = True
-    app.run()
+    app.run(port=5501)

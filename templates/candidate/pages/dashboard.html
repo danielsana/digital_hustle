@@ -1,112 +1,161 @@
 <style>
-    #btn-searchfeature {
-        border: 1px;
-        border-color: #007CAD;
-        border-style: double;
-        color: #f0ffff;
-        background-color: #007CAD;
+  #btn-searchfeature {
+    border: 1px;
+    border-color: #007cad;
+    border-style: double;
+    color: #f0ffff;
+    background-color: #007cad;
+  }
+  #btn-searchfeature:hover {
+    background-color: #f0ffff;
+    color: #007cad;
+    border-color: #007cad;
+  }
+  .search-field {
+    padding: 5px 10px;
+    color: #007cad;
+  }
+  .search-job-title,
+  .select-search-rating,
+  .select-search-location {
+    width: 100%;
+  }
+  .sugestionsDiv {
+    /* height: 10vh; */
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .sugestionsDiv span {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    height: 2rem;
+    padding: 0.5rem;
+    margin: 0.2rem;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  @media screen and (max-width: 767px) {
+    .suggestions-container {
+      display: flex;
+      flex-direction: column;
+      margin: 2em auto;
     }
-    #btn-searchfeature:hover {
-        background-color: #f0ffff;
-        color: #007CAD;
-        border-color: #007CAD;
+    .sugestionsDiv {
+      /* height: 10vh; */
+      justify-content: center;
     }
-    .search-field {
-        padding: 5px 10px; 
-        color: #007CAD;
-    }
-    .search-job-title, .select-search-rating, .select-search-location {
-        width: 100%;
-    }
+  }
 </style>
-<div class="page-own-content">
-    <div class="da-row">
-        <div class="da-col-xs-12">
-            <div class="dash-card">
-                <div class="search-2-box ">
-                    <div class="row mx-3">
-                        <form action="javascript:void(0);" method="POST" class="row g-2 align-items-center">
-                            <div class="col-md-3">
-                                <input type="text" class="search-field form-control " autofocus placeholder="e.g Web Developer" id="search_text">
-                            </div>
-                            <div class="col-md-3">
-                                
-                                <select id="search_category" name="search_category" class="form-select search-field">
-                                    <option>Job Type</option>
-                                    {% for jobtype in jobTypes %}
-                                    <option value="{{ jobtype[0] }}">{{ jobtype[1] }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <select name="location" id="search_location" class="search-field form-select">
-                                    <option>Select Location</option>
-                                    {% for location in locations %}
-                                        <option value="{{location[0]}}">{{location[0]}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <button class="btn btn-primary w-100 " id="btn-searchfeature">
-                                    <i class="fas fa-search"></i><span class="ms-2">Search</span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+<div class="page-own-content ms-auto">
+  <div class="da-row">
+    <div class="da-col-xs-12">
+      <div class="dash-card">
+        <div class="search-2-box">
+          <div class="row mx-3">
+            <form
+              action="javascript:void(0);"
+              method="POST"
+              class="row g-2 align-items-center"
+            >
+              <div class="col-md-3">
+                <input
+                  type="text"
+                  class="search-field form-control"
+                  autofocus
+                  placeholder="e.g Web Developer"
+                  id="search_text"
+                />
+              </div>
+              <div class="col-md-3">
+                <select
+                  id="search_category"
+                  name="search_category"
+                  class="form-select search-field"
+                >
+                  <option>Job Type</option>
+                  {% for jobtype in jobTypes %}
+                  <option value="{{ jobtype[0] }}">{{ jobtype[1] }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select
+                  name="location"
+                  id="search_location"
+                  class="search-field form-select"
+                >
+                  <option>Select Location</option>
+                  {% for location in locations %}
+                  <option value="{{location[0]}}">{{location[0]}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-3">
+                <button class="btn btn-primary w-100" id="btn-searchfeature">
+                  <i class="fas fa-search"></i><span class="ms-2">Search</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
-    <small class="col-md-12" id="flashMessage">
-        {% with messages = get_flashed_messages(with_categories=true) %} 
-          {% if messages %} 
-            {% for category, message in messages %}
-            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }}" role="alert">
-                {{message}}
-                <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %} 
-          {% endif %} 
-        {% endwith %}
-      </small>
-      
+  </div>
+  <small class="col-md-12" id="flashMessage">
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div
+      class="alert alert-{{ 'success' if category == 'success' else 'danger' }}"
+      role="alert"
+    >
+      {{message}}
+      <button
+        type="button"
+        class="btn-close float-end"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %} {% endif %} {% endwith %}
+  </small>
 
-
-    <div class="da-row">
-        <div class="da-col-xs-12">
-            <div class="suggestions-container">
-                <div class="s">
-                    <p>Suggestions:</p>
-                </div>
-                <div class="suggestions-pills d-inline">
-                    {% for cat in categories %}
-
-                        <span id="{{cat[0]}}" onclick="(cat_tags(this.id))" id="{{cat[0]}}" class="suggestion-pill">{{ cat[0]}}</span>
-                        
-                    {% endfor %}
-                </div>
-            </div>
+  <div class="da-row">
+    <div class="da-col-xs-12">
+      <div class="suggestions-container">
+        <div class="s">
+          <p>Suggestions:</p>
         </div>
+        <div class="suggestions-pills m-2 sugestionsDiv">
+          {% for cat in categories %}
+
+          <span
+            id="{{cat[0]}}"
+            onclick="(cat_tags(this.id))"
+            id="{{cat[0]}}"
+            class="suggestion-pill"
+            >{{ cat[0]}}</span
+          >
+
+          {% endfor %}
+        </div>
+      </div>
     </div>
+  </div>
 
-    
-
-    <div class=" mt-5">        
-        <div id="cand_dash_jobs" >
-            
-        </div>            
-    </div>
-
+  <div class="mt-2">
+    <div id="cand_dash_jobs"></div>
+  </div>
 </div>
 
-<script> 
-// Function to hide the flash message 
-function dismissFlashMessage() { 
-    var flashMessage = document.getElementById('flashMessage'); 
-    if (flashMessage) { 
-        flashMessage.style.display = 'none'; 
-    } 
-} 
-// Set a timeout to dismiss the flash message after 10 seconds (10000 milliseconds) 
-setTimeout(dismissFlashMessage, 10000); 
+<script>
+  // Function to hide the flash message
+  function dismissFlashMessage() {
+    var flashMessage = document.getElementById("flashMessage");
+    if (flashMessage) {
+      flashMessage.style.display = "none";
+    }
+  }
+  // Set a timeout to dismiss the flash message after 10 seconds (10000 milliseconds)
+  setTimeout(dismissFlashMessage, 10000);
 </script>
