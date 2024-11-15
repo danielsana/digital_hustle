@@ -228,7 +228,7 @@ def candidateLogin():
                 return redirect('/candidate/dashboard')
             
             else:
-                return render_template('candidate/login.html', error = 'Password Not Found')
+                return render_template('candidate/login.html', error = 'Incorrect Login Credentilals')
     else:
         return render_template('candidate/login.html', message = 'Login Below')
 
@@ -340,6 +340,7 @@ def companyLogin():
     else:
         return render_template('company/login.html', message = 'Login To Company Account')
     
+
 @app.route('/candidate/dashboard')
 @login_required
 def candidate_dashboard():
@@ -899,7 +900,7 @@ def update_profile():
 @app.route('/candidate/profile/<int:candidate_id>', methods=['GET'])
 @login_required
 def candidate_profile_id(candidate_id):
-    if session.get('key') not in ["candidate", "company"]:
+    if session.get('key') not in ["candidate", "company", "admin"]:
         return jsonify({'error': 'Unauthorized access or session key not set correctly.'}), 403
 
     connection = pymysql.connect(**db_config)
@@ -1406,7 +1407,100 @@ def delete_language(language_id):
 
     return redirect(url_for('update_profile'))
 
+# Admin Functions
+
+@app.route('/admin/login', methods = ['POST', 'GET'])
+def adminLogin():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        sql = 'select * from admins where email = %s'
+
+        connection = pymysql.connect(host='localhost', user='root',password='', database='hustle_db' )
+        cursor = connection.cursor()
+        cursor.execute(sql, email)
+
+        count = cursor.rowcount
+        if count == 0:
+            return render_template('admin/login.html', error = 'Incorrect Login Credentilals')
+        else:
+            admin = cursor.fetchone()
+            hashed_password = admin[5]
+            if hash_verify(password, hashed_password):
+                session['admin_key'] = admin[0]
+                session['email'] = admin[4]
+                session['fname'] = admin[1]
+                session['surname'] = admin[3]
+                session['admin_profile_pic'] = admin[8]
+                session['key'] = "admin"
+
+                return redirect('/admin/dashboard')
+            
+            else:
+                return render_template('admin/login.html', error = 'Incorrect Login Credentilals')
+    else:
+        return render_template('admin/login.html', message = 'Login Below')
+    
+
+@app.route('/admin/logout')
+def adminlogout():
+    session.clear()
+    return redirect('/')
+
+@app.route('/admin/dashboard')
+@login_required
+def admin_dashboard():
+    if session['key'] == "admin":
+        connection = pymysql.connect(host='localhost', user='root',password='', database='hustle_db' )
+        cursor = connection.cursor()
+
+        companies_sql = "SELECT COUNT(*) AS total_count FROM companies"
+        cursor.execute(companies_sql)
+        companies = cursor.fetchone()[0]
+
+        candidates_sql = "SELECT COUNT(*) AS total_count FROM candidates"
+        cursor.execute(candidates_sql)
+        candidates = cursor.fetchone()[0]
+
+        jobs_sql = "SELECT COUNT(*) AS total_count FROM postedjobs"
+        cursor.execute(jobs_sql)
+        jobs = cursor.fetchone()[0]
+
+        return render_template('admin/dashboard.html',jobs=jobs,candidates=candidates,companies=companies, current_path=request.path)
+    else:
+       return render_template('403.html')
+
+@app.route('/admin/view-companies')
+@login_required
+def view_companies():
+    if session['key'] == "admin" :
+        companies = get_allcompanies()
+
+        return render_template('admin/companies.html', companies=companies, current_path=request.path)
+    else:
+       return render_template('403.html')
+
+@app.route('/admin/view-candidates')
+@login_required
+def view_candidates():
+    if session['key'] == "admin" :
+        candidates= get_candidates()
+
+        return render_template('admin/candidates.html', candidates=candidates, current_path=request.path)
+    else:
+       return render_template('403.html')
+
+@app.route('/admin/view-jobs')
+@login_required
+def view_jobs():
+    if session['key'] == "admin" :
+        jobs = get_featured_jobs()
+
+        return render_template('admin/jobs.html',jobs=jobs, current_path=request.path)
+    else:
+       return render_template('403.html')
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(port=5501)
+    app.run()

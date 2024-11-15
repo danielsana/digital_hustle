@@ -1,0 +1,85 @@
+{% include 'admin/components/header.html' %}
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Dashboard</h1>
+        <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item active">Companies</li>
+        </ol>
+        </nav>
+    </div>
+  <!-- End Page Title -->
+  <section class="section dashboard">
+    <div class="row">
+    <!-- Left side columns -->
+        <div class="col-lg-12">
+            <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Applicants</h5>
+                <!-- Table with stripped rows -->
+                <table class="table datatable">
+                <thead>
+                    <tr>
+                        <th>Logo</th>
+                        <th>Comp. Name</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Admin Names</th>
+                        <th>Location</th>
+                        <!-- <th>Action</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% if companies %}
+                        {% for company in companies %}
+                        <tr>
+                            <th scope="row">
+                                <img src="/static/company_logos/{{company[3]}}" height="60" alt=""
+                                />
+                            </th>
+                            <td>{{ company[1] }}</td>
+                            <td>{{ company[2] }}</td>
+                            <td> 
+                                {% if company[4] != None%}
+                                    {{ company[4] }}
+                                {% endif%}
+                            </td>
+                            <td>
+                                {% if company[5] != None %}
+                                    {{ company[5] }} {% if company[7] != None%} {{ company[7] }} {% endif %}
+                                {% endif%} </td>
+                            <td>{{ company[15] }}</td>
+                            <!-- <td>
+                                <button
+                                    type="button"
+                                    class="btn btn-link btn-sm btn-rounded details-job-btn"
+                                    title="Details"
+                                    onclick="opencompanyModal('{{ company[0] }}')"
+                                    data-company-id="{{company[0]}}"
+                                    >
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td> -->
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <h5 style="color: #007CAD; text-align: center; font-size: 26px;" class="m-5">{{ companies|length }} company(s) Found</h5>
+                    {% endif %}
+                
+                </tbody>
+                </table>
+                <!-- End Table with stripped rows -->
+
+            </div>
+            </div>
+
+        </div>
+    <!-- End Left side columns -->
+    </div>
+</section>
+</main>
+<!-- End #main -->
+{% include 'admin/components/footer.html' %}
