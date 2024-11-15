@@ -340,7 +340,6 @@ def companyLogin():
     else:
         return render_template('company/login.html', message = 'Login To Company Account')
     
-
 @app.route('/candidate/dashboard')
 @login_required
 def candidate_dashboard():
