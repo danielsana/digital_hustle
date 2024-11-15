@@ -1,37 +1,118 @@
 <div class="profile-bio-container col-md-12 col-sm-6">
-    <div class="profile-bio-wrapper card p-3">
-      <div class="row text-center">
-        <div class="card-title">
-          <h4 style="color: #2b4b83">Applicants List</h4>
+  <div class="profile-bio-wrapper card p-3">
+    <div class="row text-center">
+      <div class="card-title">
+        <h4 style="color: #2b4b83">Applicants List</h4>
+      </div>
+      <input type="hidden" value="{{job_id}}" id="job_id" />
+      <div class="col-md-3 mx-3">
+        <form action="javascript:void(0);" method="POST">
+          <div class="pull-left search">
+            <input
+              id="search_posted_job"
+              class="form-control"
+              type="text"
+              placeholder="Job Title e.g: Web Developer"
+            />
+          </div>
+        </form>
+      </div>
+      <div
+        id="applicants"
+        class="table-responsive col-md-12 col-lg-12 col-sm-12"
+      >
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
-        <input type="hidden" value="{{job_id}}" id="job_id">
-        <div class="col-md-3 mx-3">
-          <form action="javascript:void(0);" method="POST">
-            <div class="pull-left search">
-              <input
-                id="search_posted_job"
-                class="form-control"
-                type="text"
-                placeholder="Job Title e.g: Web Developer"
-              />
-            </div>
-          </form>
+        <div class="spinner-grow text-danger" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
-        <div
-          id="applicants"
-          class="table-responsive col-md-12 col-lg-12 col-sm-12"
-        >
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
-          <div class="spinner-grow text-danger" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
-          <div class="spinner-border text-success" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
+        <div class="spinner-border text-success" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
       </div>
     </div>
   </div>
-  
+</div>
+
+<div
+  class="modal fade"
+  id="candidateModal"
+  tabindex="-1"
+  aria-labelledby="candidateModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="candidateModalLabel">Candidate Details</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Candidate details will be populated here by JavaScript -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function fetchCandidateDetails(element) {
+    var candidateId = element.getAttribute("data-id");
+    var url = "/candidate/details/" + candidateId;
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        // Process and display the fetched data
+        if (data.success) {
+          showCandidateModal(
+            data.profile,
+            data.skills,
+            data.experience,
+            data.certifications
+          );
+        } else {
+          alert("Could not fetch candidate details.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching candidate details:", error);
+      });
+  }
+
+  function showCandidateModal(profile, skills, experience, certifications) {
+    // You can dynamically populate a modal or section with this data
+    // Example: Populate a modal with profile information
+    var modal = document.getElementById("candidateModal");
+    modal.querySelector(".modal-title").textContent =
+      profile.first_name + " " + profile.last_name;
+    modal.querySelector(".modal-body").innerHTML = `
+        <p>Title: ${profile.title}</p>
+        <p>Email: ${profile.email}</p>
+        <p>Phone: ${profile.phone_number}</p>
+        <h5>Skills</h5>
+        <ul>${skills
+          .map((skill) => `<li>${skill.skill_name}</li>`)
+          .join("")}</ul>
+        <h5>Experience</h5>
+        <ul>${experience
+          .map((exp) => `<li>${exp.position} at ${exp.company_name}</li>`)
+          .join("")}</ul>
+        <h5>Certifications</h5>
+        <ul>${certifications
+          .map((cert) => `<li>${cert.name}</li>`)
+          .join("")}</ul>
+      `;
+    $("#candidateModal").modal("show"); // Assuming you're using Bootstrap for modal
+  }
+</script>

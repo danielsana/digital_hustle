@@ -623,15 +623,51 @@ def company_search_applicants(job_id):
         return render_template('403.html')
 
 
-#geting job applicants
+# #geting job applicants
+# @app.route('/jobs/applicants/<int:job_id>')
+# @login_required
+# def job_applicants(job_id):
+#     if session['key'] == "company" : 
+#         applicants= get_applicants(job_id)
+#         return render_template("/company/applicants.html",job_id=job_id,applicants=applicants)
+#     else:
+#             return render_template('403.html')
 @app.route('/jobs/applicants/<int:job_id>')
 @login_required
 def job_applicants(job_id):
-    if session['key'] == "company" : 
-        applicants= get_applicants(job_id)
-        return render_template("/company/applicants.html",job_id=job_id,applicants=applicants)
-    else:
-            return render_template('403.html')
+    if session.get('key') != "company":
+        return render_template('403.html')
+
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+
+    try:
+        # Get list of applicants for the job
+        applicants = get_applicants(job_id)
+
+        # Fetch detailed information for each applicant
+        detailed_applicants = []
+        for applicant in applicants:
+            candidate_id = applicant[0]  # Assuming first element is candidate_id
+            candidate_info = fetch_additional_info(cursor, candidate_id)
+            detailed_applicants.append({
+                'candidate_pro': candidate_info['candidate_pro'],
+                'technical_skills': candidate_info['technical_skills'],
+                'soft_skills': candidate_info['soft_skills'],
+                'languages': candidate_info['languages'],
+                'work_experiences': candidate_info['work_experiences'],
+                'certifications': candidate_info['certifications']
+            })
+
+        return render_template("/company/applicants.html", job_id=job_id, applicants=detailed_applicants)
+
+    except Exception as e:
+        flash(f'An error occurred while fetching applicants: {str(e)}', 'danger')
+        return redirect(url_for('home'))
+
+    finally:
+        connection.close()
+
 
 #geting job applicants
 @app.route('/candidate/applyjob/<int:job_id>')
@@ -859,6 +895,29 @@ def update_profile():
             return redirect(url_for('home'))
         finally:
             connection.close()
+# EDIT CANDIDATE PROFILE BY ID
+@app.route('/candidate/profile/<int:candidate_id>', methods=['GET'])
+@login_required
+def candidate_profile_id(candidate_id):
+    if session.get('key') not in ["candidate", "company"]:
+        return jsonify({'error': 'Unauthorized access or session key not set correctly.'}), 403
+
+    connection = pymysql.connect(**db_config)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+
+    try:
+        candidate_info = fetch_additional_info(cursor, candidate_id)
+
+        if not candidate_info['candidate_pro']:
+            return jsonify({'error': 'Candidate not found.'}), 404
+
+        return jsonify(candidate_info)
+    except Exception as e:
+        return jsonify({'error': f'An error occurred while fetching the profile: {str(e)}'}), 500
+    finally:
+        connection.close()
+
+
 
 # UPLOAD PHOTO
 @app.route('/candidate/upload-photo', methods=['GET', 'POST'])
