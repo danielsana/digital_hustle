@@ -946,7 +946,7 @@ def upload_photo():
 
                 flash('Profile picture updated successfully!', 'success')
                 return redirect(url_for('update_profile'))
-        return render_template('candidate/profile-pic-upload.html')
+        return render_template('newCandidate/profile-pic-upload.html')
     else:
         return render_template('403.html')
     
@@ -996,7 +996,7 @@ def upload_cv():
             else:
                 flash('No CV file selected.', 'danger')
         
-        return render_template('candidate/profile-cv-upload.html')
+        return render_template('newCandidate/profile-cv-upload.html')
     else:
         return render_template('403.html')
     
