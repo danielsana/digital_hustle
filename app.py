@@ -818,7 +818,7 @@ def candidate_profile():
         # Fetch candidate profile and additional info
         candidate_info = fetch_additional_info(cursor, candidate_id)
 
-        return render_template('candidate/profile.html', profile=candidate_info['candidate_pro'],
+        return render_template('newCandidate/candidateProfile.html', profile=candidate_info['candidate_pro'],
                                technical_skills=candidate_info['technical_skills'],
                                soft_skills=candidate_info['soft_skills'],
                                languages=candidate_info['languages'],
@@ -879,7 +879,7 @@ def update_profile():
             # Fetch additional info
             additional_info = fetch_additional_info(cursor, candidate_id)
 
-            return render_template('candidate/profile-edit.html',
+            return render_template('newCandidate/edit-profile.html',
                                    
                                 profile=additional_info['candidate_pro'],
                                 skills=additional_info['technical_skills'],
