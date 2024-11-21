@@ -428,7 +428,7 @@ def company_dashboard():
         cursor.execute(sql, (company_id,))
         applications = cursor.fetchall()
         applications=len(applications)
-        return render_template('company/dashboard.html',jobcounts=jobcount,job_applicants=applications)
+        return render_template('newCompany/dashboard.html',jobcounts=jobcount,job_applicants=applications)
    else:
        return render_template('403.html')
 
@@ -496,7 +496,7 @@ def company_profile():
             cursor.execute(sql, company_id)
             company_pro = cursor.fetchone()
             connection.close()
-            return render_template('/company/company-profile.html', profile=company_pro)
+            return render_template('/newCompany/companyProfile.html', profile=company_pro)
     else:
         return render_template('403.html')
    
