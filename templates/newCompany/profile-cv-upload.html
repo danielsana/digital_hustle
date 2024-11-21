@@ -364,37 +364,37 @@
           </a>
         </li>
         <!-- End Dashboard Nav -->
-  
+
         <li class="nav-item">
           <a class="nav-link" href="/candidate/dashboard">
             <i class="bi bi-search"></i><span>Search</span>
           </a>
         </li>
         <!-- End Search Nav -->
-  
+
         <li class="nav-item">
           <a class="nav-link" href="/candidate/profile">
             <i class="bi bi-person-circle"></i><span>Profile</span>
           </a>
         </li>
         <!-- End profile Nav -->
-  
+
         <li class="nav-item">
           <a class="nav-link" href="/candidate/dashboard">
             <i class="bi bi-card-checklist"></i><span>Applications</span>
           </a>
         </li>
         <!-- End applications Nav -->
-  
+
         <li class="nav-item">
-          <a class="nav-link" href="/candidate/edit-profile">
+          <a class="nav-link" href="/candidate/dashboard">
             <i class="bi bi-gear"></i><span>Settings</span>
           </a>
         </li>
         <!-- End settings Nav -->
-  
+
         <li class="nav-item">
-          <a class="nav-link" href="/logout">
+          <a class="nav-link" href="/candidate/dashboard">
             <i class="bi bi-box-arrow-left"></i><span>Log Out</span>
           </a>
         </li>
@@ -405,7 +405,7 @@
 
     <main id="main" class="main">
       <div class="pagetitle">
-        <h1>Dashboard</h1>
+        <h1 class="text-center">Profile</h1>
       </div>
       <!-- End Page Title -->
 
@@ -414,7 +414,7 @@
           <!-- Left side columns -->
           <div class="col-lg-12">
             <div class="row">
-                {% include "candidate/pages/dashboard.html" %}
+                {% include "candidate/pages/profile-cv-upload.html" %}
             </div>
             <div>
               {% include "candidate/components/panel-footer.html" %}

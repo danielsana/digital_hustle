@@ -428,7 +428,7 @@ def company_dashboard():
         cursor.execute(sql, (company_id,))
         applications = cursor.fetchall()
         applications=len(applications)
-        return render_template('company/dashboard.html',jobcounts=jobcount,job_applicants=applications)
+        return render_template('newCompany/dashboard.html',jobcounts=jobcount,job_applicants=applications)
    else:
        return render_template('403.html')
 
@@ -496,7 +496,7 @@ def company_profile():
             cursor.execute(sql, company_id)
             company_pro = cursor.fetchone()
             connection.close()
-            return render_template('/company/company-profile.html', profile=company_pro)
+            return render_template('/newCompany/companyProfile.html', profile=company_pro)
     else:
         return render_template('403.html')
    
@@ -946,7 +946,7 @@ def upload_photo():
 
                 flash('Profile picture updated successfully!', 'success')
                 return redirect(url_for('update_profile'))
-        return render_template('candidate/profile-pic-upload.html')
+        return render_template('newCandidate/profile-pic-upload.html')
     else:
         return render_template('403.html')
     
@@ -996,7 +996,7 @@ def upload_cv():
             else:
                 flash('No CV file selected.', 'danger')
         
-        return render_template('candidate/profile-cv-upload.html')
+        return render_template('newCandidate/profile-cv-upload.html')
     else:
         return render_template('403.html')
     

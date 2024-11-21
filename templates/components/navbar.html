@@ -1,65 +1,89 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Digital Hustle</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-                <a class="nav-link text-blue" aria-current="page" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/aboutus">About</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/find-jobs">Find Jobs</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/find-talent">Find Talent</a>
-            </li>
-            {% if session %}
-                {% if session['candidate_key'] %}
-                <li class="nav-item">
-                    <a class="nav-link" style="border: 2px solid #007BFF; " href="/candidate/dashboard">Dashboard</a>
-                </li>
-                {% elif session['company_key'] %}
-                <li class="nav-item">
-                    <a class="nav-link" style="border: 2px solid #007BFF; " href="/company/dashboard">Dashboard</a>
-                </li>
-                {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link" style="border: 2px solid #007BFF; " href="/logout">Logout</a>
-                </li>
-            {% else %}
-            <li class="nav-item">
-                <a class="nav-link" style="border: 2px solid #007BFF; border-radius: 10px;"  href="/choose">Sign Up</a>
-            </li>
-            {% endif %}
-        </ul>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Digital Hustle</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link text-blue" aria-current="page" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/aboutus">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/find-jobs">Find Jobs</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/find-talent">Find Talent</a>
+        </li>
+        {% if session %} {% if session['candidate_key'] %}
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            style="border: 2px solid #007bff"
+            href="/candidate/dashboard"
+            >Dashboard</a
+          >
+        </li>
+        {% elif session['company_key'] %}
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            style="border: 2px solid #007bff"
+            href="/company/dashboard"
+            >Dashboard</a
+          >
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link" style="border: 2px solid #007bff" href="/logout"
+            >Logout</a
+          >
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            style="border: 2px solid #007bff; border-radius: 10px"
+            href="/choose"
+            >Sign In</a
+          >
+        </li>
+        {% endif %}
+      </ul>
     </div>
-    </div>
-  </nav>
-  <script>
-    // Function to set the active link
-    function setActiveLink(event) {
-        // Remove 'active' class from all links
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-        // Add 'active' class to the clicked link
-        event.target.classList.add('active');
+  </div>
+</nav>
+<script>
+  // Function to set the active link
+  function setActiveLink(event) {
+    // Remove 'active' class from all links
+    document.querySelectorAll(".nav-link").forEach((link) => {
+      link.classList.remove("active");
+    });
+    // Add 'active' class to the clicked link
+    event.target.classList.add("active");
+  }
+
+  // Add event listeners to all links
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    link.addEventListener("click", setActiveLink);
+  });
+
+  // Optional: Set active class based on current URL
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    if (link.href === window.location.href) {
+      link.classList.add("active");
     }
-
-    // Add event listeners to all links
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', setActiveLink);
-    });
-
-    // Optional: Set active class based on current URL
-    document.querySelectorAll('.nav-link').forEach(link => {
-        if (link.href === window.location.href) {
-            link.classList.add('active');
-        }
-    });
+  });
 </script>
