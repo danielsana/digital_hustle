@@ -556,7 +556,7 @@ def postjob():
             jobType = get_jobType()
             salaryRange = get_salaryRange()
             skills = get_skills()
-            return render_template('company/post-jobs.html', locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)
+            return render_template('newCompany/post_jobs.html', locations=locations, jobType=jobType, salaryRange=salaryRange, skills=skills)
     else:
         return render_template('403.html')
 
