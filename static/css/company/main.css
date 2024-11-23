@@ -114,11 +114,6 @@
 body {
   background-color: var(--gray-5) !important;
 }
-.applications-card-btn {
-}
-
-.main-panel-container {
-}
 .main-panel-wrapper {
   display: flex;
   flex-direction: row;
@@ -939,4 +934,31 @@ body {
   display: flex;
   justify-content: center;
   margin: 1rem 0;
+}
+.finCon {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  justify-content: left;
+}
+@media screen and (max-width: 580px) {
+  /* Styles for screens 560px wide or smaller */
+  .finCon {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+  }
+  .finCon .item2 {
+    width: 90%;
+    margin: 2px 10px;
+  }
+  .finCon .item3 {
+    width: 90%;
+    margin: 2px 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  .finCon .item3 .lastDiv {
+    padding-bottom: 10px;
+  }
 }

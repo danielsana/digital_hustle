@@ -780,7 +780,7 @@ def company_applications():
         # job_applications_dict = {job['job_id']: job['application_count'] for job in job_applications}
         print(job_applications)
         
-        return render_template('/company/applications.html',job_application=job_applications)
+        return render_template('/newCompany/applications.html',job_application=job_applications)
     else:
         return render_template('403.html')
 
