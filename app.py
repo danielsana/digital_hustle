@@ -619,7 +619,7 @@ def company_search_applicants(job_id):
         end = start + per_page
         paginated_data = applicants[start:end]
         print("company posted jobs are", paginated_data)
-        return jsonify({'htmlresponse': render_template('company/components/applicants.html',job_id=job_id,professional_title=professional_title,applicants=paginated_data, page = page, per_page =per_page, total = pages)})
+        return jsonify({'htmlresponse': render_template('newCompany/job-applicants.html',job_id=job_id,professional_title=professional_title,applicants=paginated_data, page = page, per_page =per_page, total = pages)})
     else:
         return render_template('403.html')
 
